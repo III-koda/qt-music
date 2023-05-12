@@ -13,19 +13,19 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-    main.cpp
-    audio.cpp
-    audio.h
-    iplayer.cpp
-    iplayer.h
-    isong.cpp
-    isong.h
-    miniaudio.h
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    utils.cpp
-    utils.h
+    src/main.cpp
+    src/extlib/miniaudio.h
+    src/player/audio.cpp
+    src/player/audio.hpp
+    src/player/iplayer.cpp
+    src/player/iplayer.hpp
+    src/player/isong.cpp
+    src/player/isong.hpp
+    src/ui/mainwindow.cpp
+    src/ui/mainwindow.hpp
+    src/ui/mainwindow.ui
+    src/utils/utils.cpp
+    src/utils/utils.hpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

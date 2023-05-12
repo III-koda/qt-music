@@ -1,9 +1,9 @@
-#include "iplayer.h"
+#include "iplayer.hpp"
 
 #include <assert.h>
 #include <math.h>
 
-#include "audio.h"
+#include "audio.hpp"
 
 
 IPlayer::~IPlayer() {
