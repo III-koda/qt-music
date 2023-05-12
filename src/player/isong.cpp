@@ -1,4 +1,4 @@
-#include "isong.h"
+#include "isong.hpp"
 
 #include <math.h>
 #include <string>

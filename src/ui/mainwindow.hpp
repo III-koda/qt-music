@@ -14,7 +14,7 @@
 #include <unistd.h>
 #endif
 
-#include "iplayer.h"
+#include "../player/iplayer.hpp"
 
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +35,8 @@ private slots:
     void song_lists_item_clicked(QListWidgetItem* item);
     void next_song_button_clicked();
     void prev_song_button_clicked();
+    void replay_button_clicked();
+    void song_end_handler();
     void song_progressed_duration_updated(float progressed_duration);
     void song_slider_released();
 
@@ -51,7 +53,9 @@ private:
     QPushButton* m_dir_prompt_button;
     QPushButton* m_next_song_button;
     QPushButton* m_prev_song_button;
+    QPushButton* m_replay_button;
     QSlider* m_song_slider;
+    QLabel* m_graphics_label;
 
     const QIcon PLAY_ICON;
     const QIcon PAUSE_ICON;
@@ -59,6 +63,7 @@ private:
     size_t m_current_song_idx;
     IPlayer m_iplayer;
     QTimer* m_cursong_observing_thread;
+    bool m_is_replaying;
 };
 
 

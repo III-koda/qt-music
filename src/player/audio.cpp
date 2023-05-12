@@ -1,6 +1,6 @@
 #define MINIAUDIO_IMPLEMENTATION
 
-#include "audio.h"
+#include "audio.hpp"
 
 
 #ifdef __cplusplus

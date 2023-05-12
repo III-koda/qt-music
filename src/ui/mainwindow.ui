@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>420</width>
-    <height>370</height>
+    <width>632</width>
+    <height>461</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>MP3 Player</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(255,255,255);</string>
@@ -20,16 +20,16 @@
    <widget class="QLabel" name="song_name_label">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>220</y>
-      <width>371</width>
-      <height>21</height>
+      <x>10</x>
+      <y>0</y>
+      <width>301</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Sans Serif Collection</family>
-      <pointsize>10</pointsize>
+      <pointsize>14</pointsize>
      </font>
     </property>
     <property name="layoutDirection">
@@ -48,10 +48,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>180</x>
-      <y>280</y>
-      <width>61</width>
-      <height>51</height>
+      <x>140</x>
+      <y>70</y>
+      <width>31</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -88,10 +88,10 @@
    <widget class="QPushButton" name="dir_prompt_button">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>0</y>
+      <x>590</x>
+      <y>10</y>
       <width>31</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="font">
@@ -112,14 +112,20 @@
      <iconset>
       <normaloff>resources/folder.png</normaloff>resources/folder.png</iconset>
     </property>
+    <property name="iconSize">
+     <size>
+      <width>25</width>
+      <height>25</height>
+     </size>
+    </property>
    </widget>
    <widget class="QListWidget" name="songs_list">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>401</width>
-      <height>181</height>
+      <x>330</x>
+      <y>40</y>
+      <width>291</width>
+      <height>371</height>
      </rect>
     </property>
    </widget>
@@ -129,10 +135,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>290</y>
-      <width>31</width>
-      <height>31</height>
+      <x>180</x>
+      <y>70</y>
+      <width>21</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
@@ -169,10 +175,10 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>290</y>
-      <width>31</width>
-      <height>31</height>
+      <x>110</x>
+      <y>70</y>
+      <width>20</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
@@ -206,8 +212,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>270</y>
+      <x>20</x>
+      <y>50</y>
       <width>281</width>
       <height>16</height>
      </rect>
@@ -218,15 +224,23 @@
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
     </property>
+    <property name="tickPosition">
+     <enum>QSlider::NoTicks</enum>
+    </property>
    </widget>
    <widget class="QLabel" name="artist_label">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>240</y>
-      <width>49</width>
-      <height>16</height>
+      <x>0</x>
+      <y>30</y>
+      <width>321</width>
+      <height>20</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Artist</string>
@@ -235,13 +249,64 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QPushButton" name="replay_button">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normaloff>resources/replay.png</normaloff>resources/replay.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>23</width>
+      <height>16</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QLabel" name="graphics_label">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>110</y>
+      <width>300</width>
+      <height>300</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>resources/music.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>420</width>
+     <width>632</width>
      <height>21</height>
     </rect>
    </property>

@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "mainwindow.hpp"
 
 #include <math.h>
 #include <unordered_set>
@@ -8,23 +8,16 @@
 #include <QStandardItemModel>
 
 #include "ui_mainwindow.h"
-#include "utils.h"
+#include "../utils/utils.hpp"
 
 
-const std::unordered_set<std::string> AUDIO_EXTENSIONS {"mp3", "flac", "wav"};
-
-
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    m_ui(new Ui::MainWindow),
-    PLAY_ICON(QIcon("./resources/play.png")),
-    PAUSE_ICON(QIcon("./resources/pause.png"))
-{
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+                                          m_ui(new Ui::MainWindow),
+                                          PLAY_ICON(QIcon("../resources/play.png")),
+                                          PAUSE_ICON(QIcon("../resources/pause.png")),
+                                          m_is_replaying(false) {
     m_ui->setupUi(this);
     initialize_components();
-
-    this->setWindowTitle("Music Player");
-    this->setWindowIcon(QIcon("resources/music.png"));
 }
 
 MainWindow::~MainWindow() {
@@ -33,6 +26,8 @@ MainWindow::~MainWindow() {
 
 void
 MainWindow::initialize_components() {
+    this->setWindowIcon(QIcon("../resources/music.png"));
+
     QList<QLabel*> labels = m_ui->centralwidget->findChildren<QLabel*>();
     for (QLabel* label : labels) {
         if (label->objectName() == "song_name_label") {
@@ -42,6 +37,10 @@ MainWindow::initialize_components() {
         else if (label->objectName() == "artist_label") {
             m_artist_label = label;
             m_artist_label->setText("");
+        }
+        else if (label->objectName() == "graphics_label") {
+            m_graphics_label = label;
+            m_graphics_label->setPixmap(QPixmap("../resources/music.png"));
         }
     }
 
@@ -75,6 +74,13 @@ MainWindow::initialize_components() {
                     SIGNAL(clicked()),
                     this,
                     SLOT(prev_song_button_clicked()));
+        }
+        else if (pbutton->objectName() == "replay_button") {
+            m_replay_button = pbutton;
+            connect(m_replay_button,
+                    SIGNAL(clicked()),
+                    this,
+                    SLOT(replay_button_clicked()));
         }
     }
 
@@ -135,6 +141,7 @@ MainWindow::dir_prompt_button_clicked() {
     m_play_pause_button->setEnabled(true);
     m_next_song_button->setEnabled(true);
     m_prev_song_button->setEnabled(true);
+    m_replay_button->setEnabled(true);
     m_song_slider->setEnabled(true);
 
     m_current_song_idx = 0;
@@ -161,9 +168,27 @@ MainWindow::prev_song_button_clicked() {
 }
 
 void
+MainWindow::replay_button_clicked() {
+    m_is_replaying = !m_is_replaying;
+
+    m_replay_button->setStyleSheet(
+        m_is_replaying ? "border: 2px solid blue" : "");
+    m_replay_button->update();
+}
+
+void
 MainWindow::change_song(size_t song_idx) {
     m_current_song_idx = song_idx;
     play_song();
+}
+
+void
+MainWindow::song_end_handler() {
+    if (!m_is_replaying) {
+        next_song_button_clicked();
+    } else {
+        play_song();
+    }
 }
 
 void
@@ -185,7 +210,7 @@ MainWindow::play_song() {
     SongObserver* observer = new SongObserver(&m_iplayer);
     connect(observer,
             SIGNAL(current_song_ended()),
-            SLOT(next_song_button_clicked()));
+            SLOT(song_end_handler()));
     connect(observer,
             SIGNAL(song_progressed_duration_changed(float)),
             SLOT(song_progressed_duration_updated(float)));

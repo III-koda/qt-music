@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 
-#include "isong.h"
+#include "isong.hpp"
 
 
 class IPlayer {
