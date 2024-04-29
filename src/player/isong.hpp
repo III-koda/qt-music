@@ -8,6 +8,8 @@ public:
     ISongData(int song_index,
               std::string song_file_path);
 
+    ISongData() : m_isvalid(false) {}
+
     int get_song_index();
 
     std::string get_song_file_path();

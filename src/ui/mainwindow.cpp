@@ -123,10 +123,15 @@ MainWindow::dir_prompt_button_clicked() {
     std::vector<std::string> audio_files = files_in_dir(dir.toStdString());
 
     for (const std::string& filepath : audio_files) {
-        std::map<std::string, std::string> song_data = m_iplayer.add_song_to_list(filepath);
-        if (song_data.size() == 0) continue;
-
-        std::string song_display_info = song_data["artist"] + " - " + song_data["title"];
+        // TODO: Check if file is audio file
+        ISongData song_data = m_iplayer.add_song_to_list(filepath);
+        if (!song_data.is_valid_song()) {
+            continue;
+        }
+        std::string song_display_info =
+                !song_data.get_artist().empty() && !song_data.get_song_title().empty()
+                        ? song_data.get_artist() + " - " + song_data.get_song_title()
+                        : filepath;
         m_songs_list->addItem(song_display_info.c_str());
     }
 

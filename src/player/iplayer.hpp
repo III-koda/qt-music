@@ -23,7 +23,7 @@ public:
 
     bool continue_song();
 
-    std::map<std::string, std::string> add_song_to_list(std::string songpath);
+    ISongData add_song_to_list(std::string songpath);
 
     float song_duration();
 

@@ -105,20 +105,14 @@ IPlayer::current_song() {
     return *it;
 }
 
-std::map<std::string, std::string>
+ISongData
 IPlayer::add_song_to_list(std::string song_path) {
-    std::map<std::string, std::string> empty;
-
-    if (song_path.empty()) return empty;
+    if (song_path.empty()) return ISongData();
 
     ISongData new_song(m_songs.size(),
                        song_path);
-    if (!new_song.is_valid_song()) return empty;
+    if (!new_song.is_valid_song()) return ISongData();
 
     m_songs.push_back(new_song);
-    return std::map<std::string, std::string>({
-        {"title", new_song.get_song_title()},
-        {"artist", new_song.get_artist()},
-        {"duration", new_song.get_duration()}
-    });
+    return new_song;
 }
