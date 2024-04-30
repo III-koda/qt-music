@@ -18,7 +18,6 @@ namespace fs = boost::filesystem;
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../extlib/httplib.h"
 #include "string.hpp"
-#include <QDebug>
 
 std::vector<std::string> files_in_dir(const std::string &dir_path)
 {

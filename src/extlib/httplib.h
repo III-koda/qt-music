@@ -269,8 +269,8 @@ using socket_t = int;
 #include <iostream>
 #include <sstream>
 
-#if OPENSSL_VERSION_NUMBER < 0x30000000L
-#error Sorry, OpenSSL versions prior to 3.0.0 are not supported
+#if OPENSSL_VERSION_NUMBER < 0x1010106fL
+#error Please update your OpenSSL to a newer version
 #endif
 
 #endif
@@ -9013,7 +9013,11 @@ inline bool SSLClient::initialize_ssl(Socket &socket, Error &error) {
             return false;
           }
 
+#if OPENSSL_VERSION_NUMBER <= 0x1010106fL
+          auto server_cert = SSL_get_peer_certificate(ssl2);
+#else
           auto server_cert = SSL_get1_peer_certificate(ssl2);
+#endif
 
           if (server_cert == nullptr) {
             error = Error::SSLServerVerification;

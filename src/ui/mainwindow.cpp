@@ -3,7 +3,6 @@
 #include <math.h>
 #include <unordered_set>
 
-#include <QMovie>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStandardItemModel>
@@ -12,9 +11,7 @@
 #include "../utils/utils.hpp"
 #include "../service/cover_art_api.hpp"
 
-#include <QDebug>
-
-#define DEFAULT_COVER_ART "resources/giphy.gif"
+#define DEFAULT_COVER_ART "resources/default_cover_art.jpg"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_ui(new Ui::MainWindow),
@@ -45,9 +42,7 @@ MainWindow::initialize_components() {
         }
         else if (label->objectName() == "graphics_label") {
             m_graphics_label = label;
-            QMovie* movie = new QMovie("resources/giphy.gif");
-            m_graphics_label->setMovie(movie);
-            movie->start();
+            m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
         }
     }
 
@@ -117,8 +112,6 @@ MainWindow::play_pause_button_clicked() {
 
 void
 MainWindow::dir_prompt_button_clicked() {
-    if (m_iplayer.is_playing()) play_pause_button_clicked();
-
     QString dir = QFileDialog::getExistingDirectory(
         this,
         tr("Choose Directory"),
@@ -127,6 +120,7 @@ MainWindow::dir_prompt_button_clicked() {
 
     if (dir.isEmpty()) return;
 
+    bool initial_songs_count = m_iplayer.songs_count();
     std::vector<std::string> audio_files = files_in_dir(dir.toStdString());
 
     for (const std::string& filepath : audio_files) {
@@ -150,13 +144,14 @@ MainWindow::dir_prompt_button_clicked() {
         return;
     }
 
-    m_play_pause_button->setEnabled(true);
-    m_next_song_button->setEnabled(true);
-    m_prev_song_button->setEnabled(true);
-    m_replay_button->setEnabled(true);
-    m_song_slider->setEnabled(true);
-
-    change_song(0);
+    if (initial_songs_count == 0) {
+        m_play_pause_button->setEnabled(true);
+        m_next_song_button->setEnabled(true);
+        m_prev_song_button->setEnabled(true);
+        m_replay_button->setEnabled(true);
+        m_song_slider->setEnabled(true);
+        change_song(0);
+    }
 }
 
 void
@@ -196,9 +191,7 @@ MainWindow::change_song(size_t song_idx) {
     if (!img_path.empty()) {
         m_graphics_label->setPixmap(QPixmap(img_path.c_str()));
     } else {
-        QMovie* movie = new QMovie("resources/giphy.gif");
-            m_graphics_label->setMovie(movie);
-            movie->start();
+        m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
     }
 }
 

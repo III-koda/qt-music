@@ -74,14 +74,14 @@ IPlayer::song_duration() {
 }
 
 float
-IPlayer::song_progressed_duration() {
+IPlayer::song_progressed_duration() const {
     float result;
     ma_sound_get_cursor_in_seconds((ma_sound*)m_current_sound, &result);
     return result;
 }
 
 bool
-IPlayer::is_song_ended() {
+IPlayer::is_song_ended() const {
     return ma_sound_at_end((ma_sound*)m_current_sound) == 1;
 }
 

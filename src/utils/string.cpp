@@ -62,10 +62,8 @@ trim(const std::string& str) {
 std::string
 get_base_url(const std::string& url) {
     std::regex rgx("^.+?[^\\/:](?=[?\\/]|$)");
-
     std::smatch match;
     if (std::regex_search(url.begin(), url.end(), match, rgx)) {
-        std::cout << match[0] << std::endl;
         return match[0];
     }
     return "";

@@ -8,7 +8,6 @@
 #include "../extlib/rapidjson/stringbuffer.h"
 #include "../extlib/httplib.h"
 
-#include <QDebug>
 #include <sys/stat.h>
 #include <taglib/taglib.h>
 #include <taglib/mpegfile.h>
@@ -44,7 +43,7 @@ get_recording_data(ISongData song_data) {
             + "%20AND%20"
             + "artist%3A%22"
             + song_data.get_artist()
-            + "%22";    
+            + "%22";
     replace_all_in_place(params, " ", "%20");
     httplib::Result res = cli.Get("/ws/2/recording" + params, BASIC_HTTP_HEADERS);
 

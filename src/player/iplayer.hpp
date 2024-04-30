@@ -27,19 +27,30 @@ public:
 
     float song_duration();
 
-    float song_progressed_duration();
+    float song_progressed_duration() const;
 
-    bool is_song_ended();
+    bool is_song_ended() const;
 
     bool progress_to(int second);
 
     ISongData current_song();
 
-    void clear_songs() { m_songs.clear(); }
+    void clear_songs() {
+        m_songs.clear();
+        m_current_song_idx = -1;
+    }
 
-    bool is_playing() { return m_is_playing; }
+    bool is_playing() const {
+        return m_is_playing;
+    }
 
-    int current_song_index() { return m_current_song_idx; }
+    int current_song_index() const {
+        return m_current_song_idx;
+    }
+
+    size_t songs_count() const {
+        return m_songs.size();
+    }
 
 private:
     bool m_is_playing;
