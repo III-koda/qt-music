@@ -3,13 +3,18 @@
 #include <math.h>
 #include <unordered_set>
 
+#include <QMovie>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStandardItemModel>
 
 #include "ui_mainwindow.h"
 #include "../utils/utils.hpp"
+#include "../service/cover_art_api.hpp"
 
+#include <QDebug>
+
+#define DEFAULT_COVER_ART "resources/giphy.gif"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_ui(new Ui::MainWindow),
@@ -40,7 +45,9 @@ MainWindow::initialize_components() {
         }
         else if (label->objectName() == "graphics_label") {
             m_graphics_label = label;
-            m_graphics_label->setPixmap(QPixmap("../resources/music.png"));
+            QMovie* movie = new QMovie("resources/giphy.gif");
+            m_graphics_label->setMovie(movie);
+            movie->start();
         }
     }
 
@@ -149,8 +156,7 @@ MainWindow::dir_prompt_button_clicked() {
     m_replay_button->setEnabled(true);
     m_song_slider->setEnabled(true);
 
-    m_current_song_idx = 0;
-    play_song();
+    change_song(0);
 }
 
 void
@@ -185,6 +191,15 @@ void
 MainWindow::change_song(size_t song_idx) {
     m_current_song_idx = song_idx;
     play_song();
+
+    std::string img_path = get_cover_art(m_iplayer.current_song());
+    if (!img_path.empty()) {
+        m_graphics_label->setPixmap(QPixmap(img_path.c_str()));
+    } else {
+        QMovie* movie = new QMovie("resources/giphy.gif");
+            m_graphics_label->setMovie(movie);
+            movie->start();
+    }
 }
 
 void

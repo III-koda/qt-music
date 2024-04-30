@@ -6,6 +6,8 @@
 
 std::vector<std::string> files_in_dir(const std::string& dir_path);
 
+bool download_file(const std::string &file_url, const std::string &save_as);
+
 bool replace(std::string& str, const std::string& from, const std::string& to);
 
 #endif

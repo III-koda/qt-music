@@ -15,15 +15,19 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 set(PROJECT_SOURCES
     src/main.cpp
     src/extlib/miniaudio.h
+    src/extlib/httplib.h
     src/player/audio.cpp
     src/player/audio.hpp
     src/player/iplayer.cpp
     src/player/iplayer.hpp
     src/player/isong.cpp
     src/player/isong.hpp
+    src/service/cover_art_api.cpp
+    src/service/cover_art_api.hpp
     src/ui/mainwindow.cpp
     src/ui/mainwindow.hpp
     src/ui/mainwindow.ui
+    src/utils/string.cpp
     src/utils/utils.cpp
     src/utils/utils.hpp
 )
@@ -46,7 +50,7 @@ else()
 endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    set(LIBS dl pthread tag)
+    set(LIBS dl pthread tag ssl crypto)
 endif()
 target_link_libraries(qt-music-player PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${LIBS})
 
