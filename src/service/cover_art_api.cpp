@@ -1,12 +1,12 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 
 #include "cover_art_api.hpp"
-#include "../utils/utils.hpp"
 
 #include "../extlib/rapidjson/document.h"
 #include "../extlib/rapidjson/writer.h"
 #include "../extlib/rapidjson/stringbuffer.h"
 #include "../extlib/httplib.h"
+#include "../utils/utils.hpp"
 
 #include <sys/stat.h>
 #include <taglib/taglib.h>

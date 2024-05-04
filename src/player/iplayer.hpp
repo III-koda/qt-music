@@ -5,6 +5,8 @@
 #include <map>
 #include <string>
 
+#include <taglib/fileref.h>
+
 #include "isong.hpp"
 
 
@@ -33,11 +35,16 @@ public:
 
     bool progress_to(int second);
 
-    ISongData current_song();
+    ISongData get_song_at_index(int index) const;
+
+    bool is_audio_file_valid(std::string filepath) const;
+
+    ISongData current_song() const{
+        return get_song_at_index(m_current_song_idx);
+    }
 
     void clear_songs() {
         m_songs.clear();
-        m_current_song_idx = -1;
     }
 
     bool is_playing() const {
@@ -46,6 +53,10 @@ public:
 
     int current_song_index() const {
         return m_current_song_idx;
+    }
+
+    void set_current_song_index(int idx) {
+        m_current_song_idx = idx;
     }
 
     size_t songs_count() const {

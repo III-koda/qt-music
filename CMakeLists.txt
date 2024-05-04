@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
     src/player/isong.hpp
     src/service/cover_art_api.cpp
     src/service/cover_art_api.hpp
+    src/service/spotdl.cpp
+    src/service/spotdl.hpp
     src/ui/mainwindow.cpp
     src/ui/mainwindow.hpp
     src/ui/mainwindow.ui
@@ -45,6 +47,8 @@ else()
     else()
         add_executable(qt-music-player
             ${PROJECT_SOURCES}
+            src/ui/download_song_dialog.hpp src/ui/download_song_dialog.cpp src/ui/download_song_dialog.ui
+
         )
     endif()
 endif()

@@ -7,5 +7,6 @@
 #include "../utils/string.hpp"
 
 std::string get_cover_art(ISongData song_data);
+std::string get_spotdl();
 
 #endif

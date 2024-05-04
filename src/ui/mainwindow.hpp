@@ -16,6 +16,8 @@
 
 #include "../player/iplayer.hpp"
 
+#include "download_song_dialog.hpp"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -29,9 +31,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void get_notified_song_downloaded(std::string dir);
+
 private slots:
     void play_pause_button_clicked();
     void dir_prompt_button_clicked();
+    void download_song_button_clicked();
     void song_lists_item_clicked(QListWidgetItem* item);
     void next_song_button_clicked();
     void prev_song_button_clicked();
@@ -44,6 +49,7 @@ private:
     void initialize_components();
     void change_song(size_t song_idx);
     void play_song();
+    void change_directory(std::string dir);
 
     Ui::MainWindow* m_ui;
     QLabel* m_song_name_label;
@@ -51,19 +57,22 @@ private:
     QListWidget* m_songs_list;
     QPushButton* m_play_pause_button;
     QPushButton* m_dir_prompt_button;
+    QPushButton* m_download_song_button;
     QPushButton* m_next_song_button;
     QPushButton* m_prev_song_button;
     QPushButton* m_replay_button;
     QSlider* m_song_slider;
     QLabel* m_graphics_label;
 
+    DownloadSongDialog* m_download_song_dialog;
+
     const QIcon PLAY_ICON;
     const QIcon PAUSE_ICON;
 
     size_t m_current_song_idx;
     IPlayer m_iplayer;
-    QTimer* m_cursong_observing_thread;
     bool m_is_replaying;
+    std::string m_current_dir;
 };
 
 
