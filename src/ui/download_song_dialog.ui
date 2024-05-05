@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>681</width>
-    <height>332</height>
+    <width>682</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -57,23 +57,29 @@
     <iconset theme="document-save"/>
    </property>
   </widget>
-  <widget class="QListView" name="download_job_list">
+  <widget class="QListWidget" name="download_progress_list">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>80</y>
+     <y>70</y>
      <width>641</width>
-     <height>231</height>
+     <height>211</height>
     </rect>
    </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
    </property>
-   <property name="contextMenuPolicy">
-    <enum>Qt::ActionsContextMenu</enum>
+   <property name="frameShadow">
+    <enum>QFrame::Sunken</enum>
+   </property>
+   <property name="movement">
+    <enum>QListView::Snap</enum>
+   </property>
+   <property name="spacing">
+    <number>5</number>
+   </property>
+   <property name="viewMode">
+    <enum>QListView::ListMode</enum>
    </property>
   </widget>
  </widget>
