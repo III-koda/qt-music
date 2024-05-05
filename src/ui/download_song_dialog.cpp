@@ -2,6 +2,8 @@
 #include "ui_download_song_dialog.h"
 
 #include "../service/spotdl.hpp"
+#include "../service/ytdlp.hpp"
+#include "../utils/string.hpp"
 #include "mainwindow.hpp"
 
 #include <QLineEdit>
@@ -11,9 +13,19 @@
 
 void
 DownloaderThread::run() {
-    DownloadStatus status = (download_spotify_song(m_url, m_download_dir))
-        ? DownloadStatus::DONE
-        : DownloadStatus::FAILED;
+    bool download_res;
+
+    switch (m_platform) {
+    case MusicPlatform::SPOTIFY:
+        download_res = download_spotify_song(m_url, m_download_dir);
+        break;
+    case MusicPlatform::YOUTUBE:
+        download_res = download_youtube_audio(m_url, m_download_dir);
+        break;
+    }
+    DownloadStatus status = download_res
+            ? DownloadStatus::DONE
+            : DownloadStatus::FAILED;
     m_caller->download_finished_callback(m_url, status);
 }
 
@@ -59,16 +71,29 @@ void DownloadSongDialog::initialize_components()
 void DownloadSongDialog::download_song_button_clicked()
 {
     std::string url = m_song_url_input_box->text().toStdString();
-    if (url.empty()){
+    if (url.empty()) {
         return;
     }
+
+    MusicPlatform platform;
+    if (starts_with(url, "https://www.youtube.com")) {
+        platform = MusicPlatform::YOUTUBE;
+    }
+    else if (starts_with(url, "https://open.spotify.com")) {
+        platform = MusicPlatform::SPOTIFY;
+    }
+    else {
+        // TODO: Report error here
+        return;
+    }
+
     SongDownloadItem* song_download_item = new SongDownloadItem(m_download_progress_list,
-                                                                url, 
+                                                                url,
                                                                 m_download_progress_list->count());
 
     m_download_progress_list->addItem(song_download_item);
 
-    DownloaderThread* downloader = new DownloaderThread(url, m_download_dir, this);
+    DownloaderThread* downloader = new DownloaderThread(url, platform, m_download_dir, this);
     downloader->start();
 }
 

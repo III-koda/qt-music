@@ -1,5 +1,5 @@
-#ifndef SPOTDL_HH
-#define SPOTDL_HH
+#ifndef SPOTDL_HPP
+#define SPOTDL_HPP
 
 #include <string>
 

@@ -8,7 +8,7 @@
 #include <QScrollBar>
 #include <QStandardItemModel>
 
-#include "../utils/utils.hpp"
+#include "../utils/filesys.hpp"
 #include "../service/cover_art_api.hpp"
 #include "const.hpp"
 
@@ -169,7 +169,7 @@ MainWindow::change_directory(std::string dir) {
         std::string song_display_info =
                 !song_data.get_artist().empty() && !song_data.get_song_title().empty()
                         ? song_data.get_artist() + " - " + song_data.get_song_title()
-                        : filepath;
+                        : get_file_name(filepath, false /* remove extension */);
         m_songs_list->addItem(song_display_info.c_str());
     }
     if (m_songs_list->count() < 1) {

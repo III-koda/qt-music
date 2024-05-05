@@ -60,6 +60,19 @@ trim(const std::string& str) {
 }
 
 std::string
+upper(const std::string& str) {
+    std::string res = str;
+    std::transform(res.begin(), res.end(), res.begin(), ::toupper);
+    return res;
+}
+
+std::string lower(const std::string& str) {
+    std::string res = str;
+    std::transform(res.begin(), res.end(), res.begin(), ::tolower);
+    return res;
+}
+
+std::string
 get_base_url(const std::string& url) {
     std::regex rgx("^.+?[^\\/:](?=[?\\/]|$)");
     std::smatch match;

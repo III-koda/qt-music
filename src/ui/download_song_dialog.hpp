@@ -16,6 +16,12 @@ class DownloadSongDialog;
 class MainWindow;
 
 
+enum class MusicPlatform {
+    SPOTIFY,
+    YOUTUBE
+};
+
+
 enum class DownloadStatus {
     IN_PROGRESS,
     DONE,
@@ -104,9 +110,11 @@ class DownloaderThread : public QThread {
 
 public:
     DownloaderThread(std::string url,
+                     MusicPlatform platform,
                      std::string download_dir,
                      DownloadSongDialog* caller) :
         m_url(url),
+        m_platform(platform),
         m_download_dir(download_dir),
         m_caller(caller),
         QThread() {}
@@ -115,6 +123,7 @@ private:
     void run();
 
     std::string m_url;
+    MusicPlatform m_platform;
     std::string m_download_dir;
     DownloadSongDialog* m_caller;
 };

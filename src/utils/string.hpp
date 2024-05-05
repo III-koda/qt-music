@@ -14,6 +14,10 @@ bool starts_with(const std::string& str, const std::string& prefix);
 
 std::string trim(const std::string& str);
 
+std::string upper(const std::string& str);
+
+std::string lower(const std::string& str);
+
 std::string get_base_url(const std::string& url);
 
 #endif
