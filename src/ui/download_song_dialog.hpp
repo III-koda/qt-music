@@ -23,14 +23,14 @@ enum class DownloadStatus {
 };
 
 
-inline std::string stringify_download_status(DownloadStatus status) {
+inline std::string stringify_download_status(DownloadStatus status, bool is_emoji=false) {
     switch (status) {
     case DownloadStatus::IN_PROGRESS:
-        return "In Progress";
+        return is_emoji ? "⏳" : "Downloading";
     case DownloadStatus::DONE:
-        return "Done";
+        return is_emoji ? "✅" : "Done";
     case DownloadStatus::FAILED:
-        return "Failed";
+        return is_emoji ? "❌" : "Failed";
     }
     return "";
 }
@@ -54,7 +54,6 @@ private slots:
 
 private:
     void initialize_components();
-    void sample_qlistwidget();
 
     void download_finished_callback(std::string url, DownloadStatus status);
 
@@ -80,8 +79,20 @@ public:
             m_url(url),
             m_index(index),
             m_status(status),
-            QListWidgetItem((stringify_download_status(status) + "\t" + url).c_str(), container) {}
+            QListWidgetItem(SongDownloadItem::generate_text_content(url, status)) {}
+
+    std::string url() const { return m_url; }
+    unsigned int index() const { return m_index; }
+    DownloadStatus status() const { return m_status; }
+
+    void set_status(DownloadStatus status) {
+        m_status = status;
+        this->setText(SongDownloadItem::generate_text_content(m_url, m_status));
+    }
+
 private:
+    static QString generate_text_content(std::string url, DownloadStatus status);
+
     std::string m_url;
     unsigned int m_index;
     DownloadStatus m_status;
