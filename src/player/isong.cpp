@@ -70,7 +70,7 @@ ISongData::collect_metadata() {
     if (f.tag()) {
         TagLib::Tag* tag = f.tag();
 
-        m_song_title = std::string(tag->title().toCString());
-        m_artist = std::string(tag->artist().toCString());
+        m_song_title = std::string(tag->title().toCString(true));
+        m_artist = std::string(tag->artist().toCString(true));
     }
 }

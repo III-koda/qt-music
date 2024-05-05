@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <stdexcept>
 
 #include "audio.hpp"
 
@@ -99,9 +100,12 @@ IPlayer::progress_to(int second) {
 }
 
 ISongData
-IPlayer::current_song() {
-    std::list<ISongData>::iterator it = m_songs.begin();
-    std::advance(it, m_current_song_idx);
+IPlayer::get_song_at_index(int index) const {
+    if (index < 0 || index >= m_songs.size()) {
+        throw std::invalid_argument( "Index out of range" );
+    }
+    std::list<ISongData>::const_iterator it = m_songs.begin();
+    std::advance(it, index);
     return *it;
 }
 
@@ -115,4 +119,10 @@ IPlayer::add_song_to_list(std::string song_path) {
 
     m_songs.push_back(new_song);
     return new_song;
+}
+
+bool
+IPlayer::is_audio_file_valid(std::string filepath) const {
+    TagLib::FileRef f(filepath.c_str());
+    return !f.isNull() && f.audioProperties();
 }

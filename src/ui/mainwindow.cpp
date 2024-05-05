@@ -5,11 +5,15 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QScrollBar>
 #include <QStandardItemModel>
 
-#include "ui_mainwindow.h"
 #include "../utils/utils.hpp"
 #include "../service/cover_art_api.hpp"
+#include "const.hpp"
+
+#include "ui_mainwindow.h"
+
 
 #define DEFAULT_COVER_ART "resources/default_cover_art.jpg"
 
@@ -24,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 
 MainWindow::~MainWindow() {
     delete m_ui;
+    delete m_download_song_dialog;
 }
 
 void
@@ -63,6 +68,13 @@ MainWindow::initialize_components() {
                     this,
                     SLOT(dir_prompt_button_clicked()));
         }
+        else if (pbutton->objectName() == "download_song_button"){
+            m_download_song_button = pbutton;
+            connect(m_download_song_button,
+                    SIGNAL(clicked()),
+                    this,
+                    SLOT(download_song_button_clicked()));
+        }
         else if (pbutton->objectName() == "next_song_button") {
             m_next_song_button = pbutton;
             connect(m_next_song_button,
@@ -91,12 +103,104 @@ MainWindow::initialize_components() {
             SIGNAL(itemClicked(QListWidgetItem*)),
             this,
             SLOT(song_lists_item_clicked(QListWidgetItem*)));
+    QScrollBar* ver_scroll_bar = m_songs_list->verticalScrollBar();
+    ver_scroll_bar->setStyleSheet(CUSTOM_VERTICAL_SCROLL_BAR);
+    QScrollBar* hor_scroll_bar = m_songs_list->horizontalScrollBar();
+    hor_scroll_bar->setStyleSheet(CUSTOM_HORIZONTAL_SCROLL_BAR);
 
     m_song_slider = m_ui->centralwidget->findChild<QSlider*>();
     connect(m_song_slider,
             SIGNAL(sliderReleased()),
             this,
             SLOT(song_slider_released()));
+
+    m_download_song_dialog = new DownloadSongDialog(this);
+}
+
+void
+MainWindow::get_notified_song_downloaded(std::string dir) {
+    if (dir == m_current_dir) {
+        change_directory(dir);
+    }
+}
+
+void
+MainWindow::change_directory(std::string dir) {
+    std::vector<std::string> audio_files = files_in_dir(dir);
+
+    if (audio_files.empty()) {
+        QMessageBox::critical(
+        this,
+        tr("IPlayer"),
+        tr("Directory does not contain any audio file!"));
+
+        return;
+    }
+
+    bool has_valid_audio = false;
+    for (const std::string& filepath : audio_files) {
+        if (m_iplayer.is_audio_file_valid(filepath)){
+            has_valid_audio = true;
+            break;
+        }
+    }
+    if (!has_valid_audio) {
+        return;
+    }
+
+    std::string curr_song_file_path = "";
+    if (m_songs_list->count() > 0 || dir == m_current_dir) {
+        ISongData curr_song = m_iplayer.current_song();
+        curr_song_file_path = curr_song.get_song_file_path();
+    }
+
+    // Clear the songs list and iplayer
+    while (m_songs_list->count() > 0) {
+        m_songs_list->takeItem(0);
+    }
+    m_iplayer.clear_songs();
+
+    for (const std::string& filepath : audio_files) {
+        // TODO: Check if file is audio file
+        ISongData song_data = m_iplayer.add_song_to_list(filepath);
+        if (!song_data.is_valid_song()) {
+            continue;
+        }
+        std::string song_display_info =
+                !song_data.get_artist().empty() && !song_data.get_song_title().empty()
+                        ? song_data.get_artist() + " - " + song_data.get_song_title()
+                        : filepath;
+        m_songs_list->addItem(song_display_info.c_str());
+    }
+    if (m_songs_list->count() < 1) {
+        QMessageBox::critical(
+            this,
+            tr("IPlayer"),
+            tr("Directory does not contain any audio file!"));
+        return;
+    }
+
+    if (!curr_song_file_path.empty()) {
+        for (int i = 0; i < m_iplayer.songs_count(); i++) {
+            ISongData song = m_iplayer.get_song_at_index(i);
+            if (curr_song_file_path == song.get_song_file_path()) {
+                m_songs_list->setCurrentRow(i);
+                m_iplayer.set_current_song_index(i);
+                break;
+            }
+        }
+    }
+
+    m_play_pause_button->setEnabled(true);
+    m_next_song_button->setEnabled(true);
+    m_prev_song_button->setEnabled(true);
+    m_replay_button->setEnabled(true);
+    m_song_slider->setEnabled(true);
+    if (dir != m_current_dir) {
+        change_song(0);
+        m_current_dir = dir;
+        m_download_song_dialog->set_download_dir(dir);
+    }
 }
 
 void
@@ -111,6 +215,11 @@ MainWindow::play_pause_button_clicked() {
 }
 
 void
+MainWindow::download_song_button_clicked() {
+    m_download_song_dialog->show();
+}
+
+void
 MainWindow::dir_prompt_button_clicked() {
     QString dir = QFileDialog::getExistingDirectory(
         this,
@@ -118,40 +227,10 @@ MainWindow::dir_prompt_button_clicked() {
         "",
         QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    if (dir.isEmpty()) return;
-
-    bool initial_songs_count = m_iplayer.songs_count();
-    std::vector<std::string> audio_files = files_in_dir(dir.toStdString());
-
-    for (const std::string& filepath : audio_files) {
-        // TODO: Check if file is audio file
-        ISongData song_data = m_iplayer.add_song_to_list(filepath);
-        if (!song_data.is_valid_song()) {
-            continue;
-        }
-        std::string song_display_info =
-                !song_data.get_artist().empty() && !song_data.get_song_title().empty()
-                        ? song_data.get_artist() + " - " + song_data.get_song_title()
-                        : filepath;
-        m_songs_list->addItem(song_display_info.c_str());
-    }
-
-    if (m_songs_list->count() < 1) {
-        QMessageBox::critical(
-            this,
-            tr("IPlayer"),
-            tr("Directory does not contain any audio file!"));
+    if (dir.isEmpty()) {
         return;
     }
-
-    if (initial_songs_count == 0) {
-        m_play_pause_button->setEnabled(true);
-        m_next_song_button->setEnabled(true);
-        m_prev_song_button->setEnabled(true);
-        m_replay_button->setEnabled(true);
-        m_song_slider->setEnabled(true);
-        change_song(0);
-    }
+    change_directory(dir.toStdString());
 }
 
 void
