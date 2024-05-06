@@ -6,7 +6,7 @@
 #include "../extlib/rapidjson/writer.h"
 #include "../extlib/rapidjson/stringbuffer.h"
 #include "../extlib/httplib.h"
-#include "../utils/utils.hpp"
+#include "../utils/filesys.hpp"
 
 #include <sys/stat.h>
 #include <taglib/taglib.h>

@@ -1,19 +1,24 @@
 #include "ui/mainwindow.hpp"
 #include "service/spotdl.hpp"
+#include "service/ytdlp.hpp"
+#include "utils/filesys.hpp"
 
 #include <QApplication>
 
 
 void system_init() {
+    create_directory(app_directory());
     download_spotdl();
+    download_ytdlp();
 }
 
 
 int main(int argc, char *argv[]) {
+    system_init();
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
     w.setFixedSize(w.size());
-    system_init();
     return a.exec();
 }
