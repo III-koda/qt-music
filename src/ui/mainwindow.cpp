@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 MainWindow::~MainWindow() {
     delete m_ui;
     delete m_download_song_dialog;
+    delete m_empty_song_dir_dialog;
 }
 
 void
@@ -115,6 +116,7 @@ MainWindow::initialize_components() {
             SLOT(song_slider_released()));
 
     m_download_song_dialog = new DownloadSongDialog(this);
+    m_empty_song_dir_dialog = new EmptySongDirDialog(this);
 }
 
 void
@@ -129,23 +131,7 @@ MainWindow::change_directory(std::string dir) {
     std::vector<std::string> audio_files = files_in_dir(dir);
 
     if (audio_files.empty()) {
-        QMessageBox::critical(
-        this,
-        tr("IPlayer"),
-        tr("Directory does not contain any audio file!"));
-
-        return;
-    }
-
-    bool has_valid_audio = false;
-    for (const std::string& filepath : audio_files) {
-        if (m_iplayer.is_audio_file_valid(filepath)){
-            has_valid_audio = true;
-            break;
-        }
-    }
-    if (!has_valid_audio) {
-        return;
+        m_empty_song_dir_dialog->show();
     }
 
     std::string curr_song_file_path = "";
@@ -172,13 +158,6 @@ MainWindow::change_directory(std::string dir) {
                         : get_file_name(filepath, false /* remove extension */);
         m_songs_list->addItem(song_display_info.c_str());
     }
-    if (m_songs_list->count() < 1) {
-        QMessageBox::critical(
-            this,
-            tr("IPlayer"),
-            tr("Directory does not contain any audio file!"));
-        return;
-    }
 
     if (!curr_song_file_path.empty()) {
         for (int i = 0; i < m_iplayer.songs_count(); i++) {
@@ -191,15 +170,16 @@ MainWindow::change_directory(std::string dir) {
         }
     }
 
-    m_play_pause_button->setEnabled(true);
-    m_next_song_button->setEnabled(true);
-    m_prev_song_button->setEnabled(true);
-    m_replay_button->setEnabled(true);
-    m_song_slider->setEnabled(true);
-    if (dir != m_current_dir) {
+    bool has_songs = m_iplayer.songs_count() != 0 && m_songs_list->count() != 0;
+
+    m_play_pause_button->setEnabled(has_songs);
+    m_next_song_button->setEnabled(has_songs);
+    m_prev_song_button->setEnabled(has_songs);
+    m_replay_button->setEnabled(has_songs);
+    m_song_slider->setEnabled(has_songs);
+    if (has_songs && dir != m_current_dir) {
         change_song(0);
         m_current_dir = dir;
-        m_download_song_dialog->set_download_dir(dir);
     }
 }
 

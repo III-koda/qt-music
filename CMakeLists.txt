@@ -23,6 +23,7 @@ set(PROJECT_SOURCES
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
     src/utils/filesys.cpp
+    src/utils/network.cpp
     src/utils/string.cpp
     src/utils/system.cpp
 )
@@ -41,6 +42,7 @@ else()
         add_executable(qt-music-player
             ${PROJECT_SOURCES}
             src/ui/download_song_dialog.hpp src/ui/download_song_dialog.cpp src/ui/download_song_dialog.ui
+            src/ui/empty_song_dir_dialog.hpp src/ui/empty_song_dir_dialog.cpp src/ui/emptysongdirdialog.ui
 
         )
     endif()

@@ -58,7 +58,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>440</y>
+      <y>450</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -152,10 +152,16 @@ border: none</string>
      <bool>false</bool>
     </property>
     <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
+     <enum>QFrame::Panel</enum>
     </property>
     <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="midLineWidth">
+     <number>0</number>
     </property>
     <property name="horizontalScrollBarPolicy">
      <enum>Qt::ScrollBarAsNeeded</enum>
@@ -174,7 +180,7 @@ border: none</string>
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>440</y>
+      <y>450</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -219,7 +225,7 @@ border:none;</string>
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>440</y>
+      <y>450</y>
       <width>51</width>
       <height>51</height>
      </rect>

@@ -1,12 +1,10 @@
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-
 #include "cover_art_api.hpp"
 
 #include "../extlib/rapidjson/document.h"
 #include "../extlib/rapidjson/writer.h"
 #include "../extlib/rapidjson/stringbuffer.h"
-#include "../extlib/httplib.h"
 #include "../utils/filesys.hpp"
+#include "../utils/network.hpp"
 
 #include <sys/stat.h>
 #include <taglib/taglib.h>
@@ -15,10 +13,6 @@
 #include <taglib/id3v2frame.h>
 #include <taglib/attachedpictureframe.h>
 
-httplib::Headers BASIC_HTTP_HEADERS = {
-    {"User-Agent", "QtMusicPlayer/1.0.0"},
-    {"Accept", "application/json"}
-};
 
 static std::string
 generate_image_file_path(ISongData song_data) {
@@ -32,39 +26,32 @@ generate_image_file_path(ISongData song_data) {
 
 static rapidjson::Document
 get_recording_data(ISongData song_data) {
+    std::map<std::string, std::string> params = {
+        {"limit", "1"},
+        {"query", std::string() + "\"" + song_data.get_song_title() +
+                  "\" AND artist:\"" + song_data.get_artist() + "\""}
+    };
+    HTTPResult res = make_http_request(HTTPMethod::GET,
+                                       "https://musicbrainz.org/ws/2/recording",
+                                       params);
     rapidjson::Document d;
-    httplib::Client cli("https://musicbrainz.org");
-    cli.enable_server_certificate_verification(false);
-
-    std::string params = std::string("?")
-            + "limit=1&"
-            + "query=%22"
-            + song_data.get_song_title()
-            + "%20AND%20"
-            + "artist%3A%22"
-            + song_data.get_artist()
-            + "%22";
-    replace_all_in_place(params, " ", "%20");
-    httplib::Result res = cli.Get("/ws/2/recording" + params, BASIC_HTTP_HEADERS);
-
-    if (!res) {
+    if (!res.successful) {
         return d;
     }
-    d.Parse(res->body.c_str());
+    d.Parse(res.body.c_str());
     return d;
 }
 
 static rapidjson::Document
 get_release_data(std::string release_id) {
-    rapidjson::Document d;
+    std::string url = "https://coverartarchive.org/release/" + release_id;
 
-    httplib::Client cli("https://coverartarchive.org");
-    cli.enable_server_certificate_verification(false);
-    httplib::Result res = cli.Get("/release/" + release_id, BASIC_HTTP_HEADERS);
-    if (!res) {
+    HTTPResult res = make_http_request(HTTPMethod::GET, url, NO_PARAM);
+    rapidjson::Document d;
+    if (!res.successful) {
         return d;
     }
-    std::string body = trim(res->body);
+    std::string body = trim(res.body);
     if (!starts_with(body, "See:")) {
         return d;
     }
@@ -74,15 +61,11 @@ get_release_data(std::string release_id) {
     }
 
     std::string json_file_url = tokens[1];
-    std::string base_url = get_base_url(json_file_url);
-    httplib::Client cli2(base_url);
-    cli2.enable_server_certificate_verification(false);
-    cli2.set_follow_location(true);
-    res = cli2.Get(replace_all(json_file_url, base_url, ""), BASIC_HTTP_HEADERS);
-    if (!res) {
+    res = make_http_request(HTTPMethod::GET, json_file_url, NO_PARAM, true);
+    if (!res.successful) {
         return d;
     }
-    d.Parse(res->body.c_str());
+    d.Parse(res.body.c_str());
     return d;
 }
 
