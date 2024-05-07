@@ -6,6 +6,8 @@
 #include <QPushButton>
 #include <QThread>
 #include <QListWidget>
+#include <QLabel>
+#include <QTimer>
 
 #include <functional>
 
@@ -32,11 +34,11 @@ enum class DownloadStatus {
 inline std::string stringify_download_status(DownloadStatus status, bool is_emoji=false) {
     switch (status) {
     case DownloadStatus::IN_PROGRESS:
-        return is_emoji ? "⏳" : "Downloading";
+        return is_emoji ? "   ⏳" : "Downloading";
     case DownloadStatus::DONE:
-        return is_emoji ? "✅" : "Done";
+        return is_emoji ? "   ✅" : "Done";
     case DownloadStatus::FAILED:
-        return is_emoji ? "❌" : "Failed";
+        return is_emoji ? "   ❌" : "Failed";
     }
     return "";
 }
@@ -51,22 +53,25 @@ public:
     explicit DownloadSongDialog(QWidget *parent = nullptr);
     ~DownloadSongDialog();
 
-    void set_download_dir(std::string dir) {
-        m_download_dir = dir;
-    }
-
 private slots:
     void download_song_button_clicked();
+    void dir_select_button_clicked();
+    void warning_popup(std::string error_message);
 
 private:
     void initialize_components();
+
+    bool validate_input();
 
     void download_finished_callback(std::string url, DownloadStatus status);
 
     Ui::DownloadSongDialog* m_ui;
 
     QLineEdit* m_song_url_input_box;
+    QLabel* m_warning_label;
+    QLabel* m_dir_label;
     QPushButton* m_download_song_button;
+    QPushButton* m_dir_select_button;
     QListWidget* m_download_progress_list;
     QListWidgetItem* m_download_progress_list_header;
 

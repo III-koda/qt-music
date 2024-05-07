@@ -17,6 +17,7 @@
 #include "../player/iplayer.hpp"
 
 #include "download_song_dialog.hpp"
+#include "empty_song_dir_dialog.hpp"
 
 
 QT_BEGIN_NAMESPACE
@@ -32,6 +33,10 @@ public:
     ~MainWindow();
 
     void get_notified_song_downloaded(std::string dir);
+
+    DownloadSongDialog* get_download_song_dialog() const {
+        return m_download_song_dialog;
+    }
 
 private slots:
     void play_pause_button_clicked();
@@ -65,6 +70,7 @@ private:
     QLabel* m_graphics_label;
 
     DownloadSongDialog* m_download_song_dialog;
+    EmptySongDirDialog* m_empty_song_dir_dialog;
 
     const QIcon PLAY_ICON;
     const QIcon PAUSE_ICON;

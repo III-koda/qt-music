@@ -3,7 +3,7 @@
 #include "../extlib/rapidjson/document.h"
 #include "../extlib/rapidjson/writer.h"
 #include "../extlib/rapidjson/stringbuffer.h"
-#include "../extlib/httplib.h"
+#include "../utils/network.hpp"
 #include "../utils/string.hpp"
 #include "../utils/system.hpp"
 #include "../utils/filesys.hpp"
@@ -49,22 +49,19 @@ extract_video_id(const std::string& url) {
  */
 static rapidjson::Document
 get_video_info(const std::string& video_id) {
-    httplib::Headers BASIC_HTTP_HEADERS = {
-        {"User-Agent", "QtMusicPlayer/1.0.0"},
-        {"Accept", "application/json"}
+    std::map<std::string, std::string> params {
+        {"part", "snippet"},
+        {"key", "AIzaSyBX5a7LHxeOvFaVXbGrFICQWTH5MIJKzGw"},
+        {"id", video_id}
     };
+    HTTPResult res = make_http_request(HTTPMethod::GET,
+                                       "https://www.googleapis.com/youtube/v3/videos",
+                                       params);
     rapidjson::Document d;
-    httplib::Client cli("https://www.googleapis.com");
-
-    std::string params = std::string("?") +
-            "part=snippet&key=AIzaSyBX5a7LHxeOvFaVXbGrFICQWTH5MIJKzGw&" +
-            "id=" + video_id;
-    httplib::Result res = cli.Get("/youtube/v3/videos" + params,
-                                  BASIC_HTTP_HEADERS);
-    if (!res || res->status != 200) {
+    if (!res.successful || res.status != 200) {
         return d;
     }
-    d.Parse(res->body.c_str());
+    d.Parse(res.body.c_str());
     return d;
 }
 
@@ -74,22 +71,19 @@ get_video_info(const std::string& video_id) {
  */
 static rapidjson::Document
 get_channel_info(const std::string& channel_id) {
-    httplib::Headers BASIC_HTTP_HEADERS = {
-        {"User-Agent", "QtMusicPlayer/1.0.0"},
-        {"Accept", "application/json"}
+    std::map<std::string, std::string> params {
+        {"part", "snippet"},
+        {"key", "AIzaSyBX5a7LHxeOvFaVXbGrFICQWTH5MIJKzGw"},
+        {"id", channel_id}
     };
+    HTTPResult res = make_http_request(HTTPMethod::GET,
+                                       "https://www.googleapis.com/youtube/v3/channels",
+                                       params);
     rapidjson::Document d;
-    httplib::Client cli("https://www.googleapis.com");
-
-    std::string params = std::string("?") +
-            "part=snippet&key=AIzaSyBX5a7LHxeOvFaVXbGrFICQWTH5MIJKzGw&" +
-            "id=" + channel_id;
-    httplib::Result res = cli.Get("/youtube/v3/channels" + params,
-                                  BASIC_HTTP_HEADERS);
-    if (!res || res->status != 200) {
+    if (!res.successful || res.status != 200) {
         return d;
     }
-    d.Parse(res->body.c_str());
+    d.Parse(res.body.c_str());
     return d;
 }
 

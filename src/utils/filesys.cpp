@@ -15,6 +15,7 @@ namespace fs = boost::filesystem;
 #endif
 #endif
 
+#include <fstream>
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -24,9 +25,7 @@ namespace fs = boost::filesystem;
 #include <taglib/id3v2tag.h>
 #include <taglib/attachedpictureframe.h>
 
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-#include "../extlib/httplib.h"
-
+#include "network.hpp"
 #include "string.hpp"
 
 
@@ -87,26 +86,17 @@ std::vector<std::string> files_in_dir(const std::string &dir_path)
 bool
 download_file(const std::string &file_url, const std::string &save_as)
 {
-    std::string base_url = get_base_url(file_url);
-    httplib::Client client(base_url);
-    client.enable_server_certificate_verification(false);
-    client.set_follow_location(true);
-
-    httplib::Result res = client.Get(replace_all(file_url, base_url, ""));
-
-    if (!res || res->status != 200)
-    {
+    HTTPResult res = make_http_request(HTTPMethod::GET, file_url, NO_PARAM, true);
+    if (!res.successful || res.status != 200) {
         return false;
     }
     std::string path = save_as.c_str();
 
     std::ofstream file(path, std::ios::binary);
-    if (file.is_open())
-    {
-        file.write(res->body.data(), res->body.size());
+    if (file.is_open()) {
+        file.write(res.body.data(), res.body.size());
     }
-    else
-    {
+    else {
         return false;
     }
 

@@ -1,15 +1,26 @@
 #include "download_song_dialog.hpp"
 #include "ui_download_song_dialog.h"
 
+#include <QFileDialog>
+
 #include "../service/spotdl.hpp"
 #include "../service/ytdlp.hpp"
+#include "../utils/network.hpp"
 #include "../utils/string.hpp"
 #include "mainwindow.hpp"
 
-#include <QLineEdit>
+#define YOUTUBE_BASE_URL "https://www.youtube.com"
+#define SPOTIFY_BASE_URL "https://open.spotify.com"
 
-#include <QDebug>
 
+static bool
+url_valid(const std::string url) {
+    if (!starts_with(url, YOUTUBE_BASE_URL) && !starts_with(url, SPOTIFY_BASE_URL)){
+        return false;
+    }
+    HTTPResult res = make_http_request(HTTPMethod::HEAD, url);
+    return res.successful && res.status == 200;
+}
 
 void
 DownloaderThread::run() {
@@ -53,13 +64,21 @@ void DownloadSongDialog::initialize_components()
 {
     m_song_url_input_box = m_ui->song_url_input_box;
     m_song_url_input_box->setPlaceholderText(
-            "Spotify track URL (e.g. https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB)");
+            "Spotify track URL (e.g. https://open.spotify.com/track/7MXVkk9YMctZ)");
 
     m_download_progress_list = m_ui->download_progress_list;
     std::string header_content =
             "Status\tURL";
     m_download_progress_list_header = new QListWidgetItem(tr(header_content.c_str()),
                                                           m_download_progress_list);
+    m_warning_label = m_ui->warning_label;
+    m_dir_label = m_ui->dir_label;
+
+    m_dir_select_button = m_ui->dir_select_button;
+    connect(m_dir_select_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(dir_select_button_clicked()));
 
     m_download_song_button = m_ui->download_button;
     connect(m_download_song_button,
@@ -68,33 +87,71 @@ void DownloadSongDialog::initialize_components()
             SLOT(download_song_button_clicked()));
 }
 
-void DownloadSongDialog::download_song_button_clicked()
+void 
+DownloadSongDialog::dir_select_button_clicked() {
+    QString dir = QFileDialog::getExistingDirectory(
+        this,
+        tr("Choose Download Directory"),
+        "",
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+        if (dir.isEmpty()){
+            return;
+        }
+        m_dir_label->setText((dir.toStdString()).c_str());
+        m_download_dir = dir.toStdString();
+}
+
+void 
+DownloadSongDialog::download_song_button_clicked()
 {
     std::string url = m_song_url_input_box->text().toStdString();
-    if (url.empty()) {
+
+    if (!validate_input()) {
         return;
     }
 
     MusicPlatform platform;
-    if (starts_with(url, "https://www.youtube.com")) {
+    if (starts_with(url, YOUTUBE_BASE_URL)) {
         platform = MusicPlatform::YOUTUBE;
     }
-    else if (starts_with(url, "https://open.spotify.com")) {
+    else if (starts_with(url, SPOTIFY_BASE_URL)) {
         platform = MusicPlatform::SPOTIFY;
-    }
-    else {
-        // TODO: Report error here
-        return;
     }
 
     SongDownloadItem* song_download_item = new SongDownloadItem(m_download_progress_list,
                                                                 url,
                                                                 m_download_progress_list->count());
-
     m_download_progress_list->addItem(song_download_item);
 
     DownloaderThread* downloader = new DownloaderThread(url, platform, m_download_dir, this);
     downloader->start();
+}
+
+bool
+DownloadSongDialog::validate_input() {
+    std::string url = m_song_url_input_box->text().toStdString();
+    if (url.empty()) {
+        warning_popup("Missing URL");
+        return false;
+    }
+    if (!url_valid(url)) {
+        warning_popup("Invalid URL");
+        return false;
+    }
+
+    if (m_download_dir.empty()){
+        warning_popup("Please select a folder to download to");
+        return false;
+    }
+    return true;
+}
+
+void DownloadSongDialog::warning_popup(std::string error_message) {
+    m_warning_label->setText(error_message.c_str());
+    QTimer::singleShot(3000, [=]() {
+        m_warning_label->clear();
+    });
 }
 
 void

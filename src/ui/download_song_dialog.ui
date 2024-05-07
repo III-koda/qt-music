@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>682</width>
-    <height>300</height>
+    <width>671</width>
+    <height>435</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,9 +31,9 @@
   <widget class="QLineEdit" name="song_url_input_box">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>30</y>
-     <width>531</width>
+     <x>60</x>
+     <y>20</y>
+     <width>591</width>
      <height>31</height>
     </rect>
    </property>
@@ -44,9 +44,9 @@
   <widget class="QPushButton" name="download_button">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>20</y>
-     <width>101</width>
+     <x>540</x>
+     <y>100</y>
+     <width>111</width>
      <height>41</height>
     </rect>
    </property>
@@ -61,9 +61,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>70</y>
-     <width>641</width>
-     <height>211</height>
+     <y>150</y>
+     <width>631</width>
+     <height>271</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -72,14 +72,147 @@
    <property name="frameShadow">
     <enum>QFrame::Sunken</enum>
    </property>
+   <property name="sizeAdjustPolicy">
+    <enum>QAbstractScrollArea::AdjustIgnored</enum>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="dragEnabled">
+    <bool>false</bool>
+   </property>
+   <property name="dragDropMode">
+    <enum>QAbstractItemView::DragOnly</enum>
+   </property>
+   <property name="defaultDropAction">
+    <enum>Qt::IgnoreAction</enum>
+   </property>
+   <property name="alternatingRowColors">
+    <bool>true</bool>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::NoSelection</enum>
+   </property>
    <property name="movement">
     <enum>QListView::Snap</enum>
+   </property>
+   <property name="resizeMode">
+    <enum>QListView::Fixed</enum>
    </property>
    <property name="spacing">
     <number>5</number>
    </property>
    <property name="viewMode">
     <enum>QListView::ListMode</enum>
+   </property>
+   <property name="selectionRectVisible">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="warning_label">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>100</y>
+     <width>461</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <bold>false</bold>
+     <kerning>true</kerning>
+    </font>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(255, 255, 255, 0);
+color: rgb(224, 27, 36);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+   <property name="textInteractionFlags">
+    <set>Qt::NoTextInteraction</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="dir_label">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>60</y>
+     <width>591</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
+   <property name="acceptDrops">
+    <bool>true</bool>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-color: rgb(61, 56, 70);</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="dir_select_button">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::PreventContextMenu</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(0, 0, 0, 0));
+font: 17pt &quot;Ubuntu&quot;;
+border:none;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset theme="folder"/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>25</width>
+     <height>25</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="url_label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>URL</string>
    </property>
   </widget>
  </widget>

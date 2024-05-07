@@ -1,12 +1,10 @@
 #include "spotdl.hpp"
 
-#include "../extlib/httplib.h"
 #include "../utils/filesys.hpp"
 
 #include <filesystem>
 
 #include <QString>
-#include <QDebug>
 
 #define SPOTDL_EXE_URL "https://github.com/spotDL/spotify-downloader/releases/download/v4.2.5/spotdl-4.2.5-linux"
 
@@ -27,10 +25,9 @@ download_spotdl() {
     }
 }
 
-
-bool download_spotify_song(const std::string spotify_url, std::string save_dir) {
+bool
+download_spotify_song(const std::string spotify_url, std::string save_dir) {
     if (!download_spotdl()) {
-        qDebug() << QString("Error: spotdl executable not found.");
         return false;
     }
     if (spotify_url.empty()) {
@@ -42,7 +39,6 @@ bool download_spotify_song(const std::string spotify_url, std::string save_dir) 
 
     int result = std::system(command.c_str());
     if (result != 0) {
-        qDebug() << QString("Error: Failed to download song.");
         return false;
     }
     return true;
