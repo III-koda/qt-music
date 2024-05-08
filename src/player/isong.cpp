@@ -7,6 +7,9 @@
 #include <taglib/tag.h>
 #include <taglib/tpropertymap.h>
 
+#include "../utils/filesys.hpp"
+#include "../utils/string.hpp"
+
 
 ISongData::ISongData(int song_index,
                      std::string song_file_path) {
@@ -45,6 +48,13 @@ ISongData::get_song_title() {
 std::string
 ISongData::get_artist() {
     return m_artist;
+}
+
+std::string
+ISongData::generate_display_title() const {
+    return m_artist.empty() || m_song_title.empty()
+            ? get_file_name(m_song_file_path, false /* remove extension */)
+            : replace_all(m_artist, "/", ", ") + " - " + m_song_title;
 }
 
 bool

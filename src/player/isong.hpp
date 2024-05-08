@@ -22,6 +22,8 @@ public:
 
     std::string get_artist();
 
+    std::string generate_display_title() const;
+
     bool is_valid_song();
 
 private:

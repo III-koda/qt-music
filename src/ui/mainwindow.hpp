@@ -55,10 +55,10 @@ private:
     void change_song(size_t song_idx);
     void play_song();
     void change_directory(std::string dir);
+    void make_moving_title();
 
     Ui::MainWindow* m_ui;
-    QLabel* m_song_name_label;
-    QLabel* m_artist_label;
+    QLabel* m_song_title_label;
     QListWidget* m_songs_list;
     QPushButton* m_play_pause_button;
     QPushButton* m_dir_prompt_button;
@@ -68,6 +68,8 @@ private:
     QPushButton* m_replay_button;
     QSlider* m_song_slider;
     QLabel* m_graphics_label;
+    QTimer* m_title_timer; // Timer used for making moving title
+    QTimer* m_single_shot_timer; // Timer used for single shot purpose
 
     DownloadSongDialog* m_download_song_dialog;
     EmptySongDirDialog* m_empty_song_dir_dialog;
