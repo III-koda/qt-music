@@ -56,7 +56,6 @@ public:
 private slots:
     void download_song_button_clicked();
     void dir_select_button_clicked();
-    void warning_popup(std::string error_message);
 
 private:
     void initialize_components();
@@ -64,6 +63,8 @@ private:
     bool validate_input();
 
     void download_finished_callback(std::string url, DownloadStatus status);
+
+    void warning_popup(std::string error_message);
 
     Ui::DownloadSongDialog* m_ui;
 

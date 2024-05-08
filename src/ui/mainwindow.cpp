@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QStandardItemModel>
+#include <QLabel>
+#include <QTimer>
 
 #include "../utils/filesys.hpp"
 #include "../service/cover_art_api.hpp"
@@ -30,6 +32,8 @@ MainWindow::~MainWindow() {
     delete m_ui;
     delete m_download_song_dialog;
     delete m_empty_song_dir_dialog;
+    delete m_title_timer;
+    delete m_single_shot_timer;
 }
 
 void
@@ -38,13 +42,9 @@ MainWindow::initialize_components() {
 
     QList<QLabel*> labels = m_ui->centralwidget->findChildren<QLabel*>();
     for (QLabel* label : labels) {
-        if (label->objectName() == "song_name_label") {
-            m_song_name_label = label;
-            m_song_name_label->setText("");
-        }
-        else if (label->objectName() == "artist_label") {
-            m_artist_label = label;
-            m_artist_label->setText("");
+        if (label->objectName() == "song_title_label") {
+            m_song_title_label = label;
+            m_song_title_label->setText("");
         }
         else if (label->objectName() == "graphics_label") {
             m_graphics_label = label;
@@ -115,6 +115,9 @@ MainWindow::initialize_components() {
             this,
             SLOT(song_slider_released()));
 
+    m_title_timer = new QTimer();
+    m_single_shot_timer = new QTimer();
+
     m_download_song_dialog = new DownloadSongDialog(this);
     m_empty_song_dir_dialog = new EmptySongDirDialog(this);
 }
@@ -152,11 +155,7 @@ MainWindow::change_directory(std::string dir) {
         if (!song_data.is_valid_song()) {
             continue;
         }
-        std::string song_display_info =
-                !song_data.get_artist().empty() && !song_data.get_song_title().empty()
-                        ? song_data.get_artist() + " - " + song_data.get_song_title()
-                        : get_file_name(filepath, false /* remove extension */);
-        m_songs_list->addItem(song_display_info.c_str());
+        m_songs_list->addItem(song_data.generate_display_title().c_str());
     }
 
     if (!curr_song_file_path.empty()) {
@@ -276,6 +275,10 @@ MainWindow::song_slider_released() {
 
 void
 MainWindow::play_song() {
+    m_single_shot_timer->stop();
+    delete m_title_timer;
+    m_title_timer = new QTimer();
+
     // Play the song
     m_iplayer.play_song(m_current_song_idx);
 
@@ -292,12 +295,41 @@ MainWindow::play_song() {
             SLOT(deleteLater()));
     observer->start();
 
-    // Update UI
+    // Update display title
     ISongData current_song = m_iplayer.current_song();
-    m_song_name_label->setText(current_song.get_song_title().c_str());
-    m_artist_label->setText(current_song.get_artist().c_str());
+    m_song_title_label->setText(current_song.generate_display_title().c_str());
+    if (m_song_title_label->fontMetrics().width(m_song_title_label->text())
+            >= m_song_title_label->width()) {
+        m_song_title_label->setAlignment(Qt::AlignLeft);
+        make_moving_title();
+    } else {
+        m_song_title_label->setAlignment(Qt::AlignCenter);
+    }
+
     m_songs_list->item(m_current_song_idx)->setSelected(true);
     m_play_pause_button->setIcon(PAUSE_ICON);
     m_song_slider->setMaximum(ceil(m_iplayer.song_duration()));
     m_song_slider->setValue(0);
+}
+
+void
+MainWindow::make_moving_title() {
+    size_t extra_space_count =
+            m_song_title_label->width() / QFontMetrics(m_song_title_label->font()).width(' ');
+    m_song_title_label->setText(m_song_title_label->text() +
+                                std::string(extra_space_count, ' ').c_str());
+
+    connect(m_title_timer, &QTimer::timeout, [&]() {
+        QString text = m_song_title_label->text();
+        text.push_back(text.front());
+        text.remove(0, 1);
+        m_song_title_label->setText(text);
+    });
+
+    connect(m_single_shot_timer, &QTimer::timeout, [&] {
+        m_title_timer->start(200);
+        delete m_single_shot_timer;
+        m_single_shot_timer = new QTimer();
+    });
+    m_single_shot_timer->start(2000);
 }
