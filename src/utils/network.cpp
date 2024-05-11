@@ -4,6 +4,9 @@
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../extlib/httplib.h"
+#include "../extlib/logger.hpp"
+
+Logger* network_log = Logger::init_logging();
 
 
 httplib::Headers BASIC_HTTP_HEADERS = {
@@ -22,6 +25,9 @@ make_http_request(HTTPMethod method,
     httplib::Client client(base_url);
     client.set_follow_location(follow_location);
 
+    network_log->log(LogLevel::INFO, LogOutput::FILE, "Making HTTP request to: " + base_url + route_url);
+
+
     std::string params_str;
     if (!params.empty()){
         params_str += "?";
@@ -37,7 +43,6 @@ make_http_request(HTTPMethod method,
     route_url = (route_url.empty()? "/" : route_url) + params_str;
 
     httplib::Result response;
-    std::cout << route_url << std::endl;
     switch (method) {
     case HTTPMethod::HEAD:
         response = client.Head(route_url, BASIC_HTTP_HEADERS);

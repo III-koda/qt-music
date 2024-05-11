@@ -9,6 +9,8 @@
 #include "../utils/string.hpp"
 #include "mainwindow.hpp"
 
+#include "../extlib/logger.hpp"
+
 #define YOUTUBE_BASE_URL "https://www.youtube.com"
 #define SPOTIFY_BASE_URL "https://open.spotify.com"
 
@@ -37,6 +39,10 @@ DownloaderThread::run() {
     DownloadStatus status = download_res
             ? DownloadStatus::DONE
             : DownloadStatus::FAILED;
+
+    std::string log_msg = "Download URL: " + m_url + (download_res ? " Success" : "Failed");
+    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, log_msg);
+
     m_caller->download_finished_callback(m_url, status);
 }
 
@@ -100,6 +106,7 @@ DownloadSongDialog::dir_select_button_clicked() {
         }
         m_dir_label->setText((dir.toStdString()).c_str());
         m_download_dir = dir.toStdString();
+        Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, "Download DIR select: " + m_download_dir);
 }
 
 void 
@@ -126,6 +133,8 @@ DownloadSongDialog::download_song_button_clicked()
 
     DownloaderThread* downloader = new DownloaderThread(url, platform, m_download_dir, this);
     downloader->start();
+
+    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, "Download requested for URL: " + url);
 }
 
 bool
@@ -133,15 +142,18 @@ DownloadSongDialog::validate_input() {
     std::string url = m_song_url_input_box->text().toStdString();
     if (url.empty()) {
         warning_popup("Missing URL");
+        Logger::init_logging()->log(LogLevel::WARN, LogOutput::FILE, "NO URL");
         return false;
     }
     if (!url_valid(url)) {
         warning_popup("Invalid URL");
+        Logger::init_logging()->log(LogLevel::WARN, LogOutput::FILE, "invalid URL: " + url);
         return false;
     }
 
     if (m_download_dir.empty()){
         warning_popup("Please select a folder to download to");
+        Logger::init_logging()->log(LogLevel::WARN, LogOutput::FILE, "NO Download dir");
         return false;
     }
     return true;

@@ -16,6 +16,8 @@
 
 #include "ui_mainwindow.h"
 
+#include "../extlib/logger.hpp"
+#define LOG_FILEPATH "./qtmusic.log"
 
 #define DEFAULT_COVER_ART "resources/default_cover_art.jpg"
 
@@ -26,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_is_replaying(false) {
     m_ui->setupUi(this);
     initialize_components();
+
+    Logger::init_logging()->set_log_filepath(LOG_FILEPATH);
+    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, "Logger initialized and filepath set");
 }
 
 MainWindow::~MainWindow() {
@@ -38,6 +43,7 @@ MainWindow::~MainWindow() {
 
 void
 MainWindow::initialize_components() {
+    Logger::init_logging()->log(LogLevel::DEBUG, LogOutput::FILE, "Initializing components");
     this->setWindowIcon(QIcon("../resources/music.png"));
 
     QList<QLabel*> labels = m_ui->centralwidget->findChildren<QLabel*>();
@@ -124,6 +130,8 @@ MainWindow::initialize_components() {
 
 void
 MainWindow::get_notified_song_downloaded(std::string dir) {
+    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, 
+                                "Song downloaded in directory: " + dir);
     if (dir == m_current_dir) {
         change_directory(dir);
     }
@@ -131,6 +139,7 @@ MainWindow::get_notified_song_downloaded(std::string dir) {
 
 void
 MainWindow::change_directory(std::string dir) {
+    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, "Changing directory: " + dir);
     std::vector<std::string> audio_files = files_in_dir(dir);
 
     if (audio_files.empty()) {
@@ -184,6 +193,8 @@ MainWindow::change_directory(std::string dir) {
 
 void
 MainWindow::play_pause_button_clicked() {
+    Logger::init_logging()->log(LogLevel::INFO, LogOutput::CONSOLE, "Play/Pause button clicked");
+
     if (m_iplayer.is_playing()) {
         m_play_pause_button->setIcon(PLAY_ICON);
         m_iplayer.stop_song();
