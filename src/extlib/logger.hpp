@@ -16,27 +16,18 @@ enum class LogLevel {
     DEBUG
 };
 
-enum class LogOutput {
-    CONSOLE,
-    FILE
-};
-
 class Logger {
 public:
-    static Logger* init_logging() {
+    static Logger* get_instance() {
         static Logger instance;
         return &instance;
     }
 
-    void log(LogLevel log_level, LogOutput log_output,const std::string& message) {
+    void log(LogLevel log_level, const std::string& message) {
         std::string log_message = get_current_timestamp_str() +
                                   get_log_level_str(log_level) +
                                   message;
         log_to_file(log_message);
-
-        if (log_output == LogOutput::CONSOLE) {
-            std::cout << log_message << std::endl;
-        }
     }
 
     void set_log_filepath(const std::string& filepath) {
@@ -48,16 +39,14 @@ private:
 
     std::string get_log_level_str(LogLevel level) const {
         switch (level) {
-            case LogLevel::ERROR:
-                return "[ERROR]  ";
-            case LogLevel::WARNING:
-                return "[WARN]   ";
-            case LogLevel::INFO:
-                return "[INFO]   ";
-            case LogLevel::DEBUG:
-                return "[DEBUG]  ";
-            default:
-                return "[UNKOWN] ";
+        case LogLevel::ERROR:
+            return "[ERROR]  ";
+        case LogLevel::WARNING:
+            return "[WARN]   ";
+        case LogLevel::INFO:
+            return "[INFO]   ";
+        case LogLevel::DEBUG:
+            return "[DEBUG]  ";
         }
     }
 
@@ -71,16 +60,15 @@ private:
 
         my_log_file << log_message << std::endl;
         my_log_file.close();
-        return true;
     }
 
     std::string get_current_timestamp_str() const {
         std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
         std::time_t now_c = std::chrono::system_clock::to_time_t(now);
         std::tm now_tm = *std::localtime(&now_c);
-        std::ostringstream timestampStream;
-        timestampStream << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
-        return "[" + timestampStream.str() + "]";
+        std::ostringstream timestamp_stream;
+        timestamp_stream << std::put_time(&now_tm, "%Y-%m-%d %H:%M:%S");
+        return "[" + timestamp_stream.str() + "]";
     }
 };
 

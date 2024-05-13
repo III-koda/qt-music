@@ -17,7 +17,6 @@
 #include "ui_mainwindow.h"
 
 #include "../extlib/logger.hpp"
-#define LOG_FILEPATH "./qtmusic.log"
 
 #define DEFAULT_COVER_ART "resources/default_cover_art.jpg"
 
@@ -28,9 +27,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_is_replaying(false) {
     m_ui->setupUi(this);
     initialize_components();
-
-    Logger::init_logging()->set_log_filepath(LOG_FILEPATH);
-    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, "Logger initialized and filepath set");
 }
 
 MainWindow::~MainWindow() {
@@ -43,7 +39,7 @@ MainWindow::~MainWindow() {
 
 void
 MainWindow::initialize_components() {
-    Logger::init_logging()->log(LogLevel::DEBUG, LogOutput::FILE, "Initializing components");
+    Logger::get_instance()->log(LogLevel::DEBUG, "Initializing components");
     this->setWindowIcon(QIcon("../resources/music.png"));
 
     QList<QLabel*> labels = m_ui->centralwidget->findChildren<QLabel*>();
@@ -55,6 +51,14 @@ MainWindow::initialize_components() {
         else if (label->objectName() == "graphics_label") {
             m_graphics_label = label;
             m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
+        }
+        else if (label->objectName() == "background") {
+            m_background = label;
+            m_background->setPixmap(QPixmap(DEFAULT_COVER_ART));
+        }
+        else if (label->objectName() == "blur") {
+            m_blur = label;
+
         }
     }
 
@@ -130,7 +134,7 @@ MainWindow::initialize_components() {
 
 void
 MainWindow::get_notified_song_downloaded(std::string dir) {
-    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, 
+    Logger::get_instance()->log(LogLevel::INFO, 
                                 "Song downloaded in directory: " + dir);
     if (dir == m_current_dir) {
         change_directory(dir);
@@ -139,7 +143,7 @@ MainWindow::get_notified_song_downloaded(std::string dir) {
 
 void
 MainWindow::change_directory(std::string dir) {
-    Logger::init_logging()->log(LogLevel::INFO, LogOutput::FILE, "Changing directory: " + dir);
+    Logger::get_instance()->log(LogLevel::INFO, "Changing directory: " + dir);
     std::vector<std::string> audio_files = files_in_dir(dir);
 
     if (audio_files.empty()) {
@@ -193,8 +197,6 @@ MainWindow::change_directory(std::string dir) {
 
 void
 MainWindow::play_pause_button_clicked() {
-    Logger::init_logging()->log(LogLevel::INFO, LogOutput::CONSOLE, "Play/Pause button clicked");
-
     if (m_iplayer.is_playing()) {
         m_play_pause_button->setIcon(PLAY_ICON);
         m_iplayer.stop_song();
@@ -259,6 +261,8 @@ MainWindow::change_song(size_t song_idx) {
     std::string img_path = get_cover_art(m_iplayer.current_song());
     if (!img_path.empty()) {
         m_graphics_label->setPixmap(QPixmap(img_path.c_str()));
+        m_background->setPixmap(QPixmap(img_path.c_str()));
+        m_background->setScaledContents(true);
     } else {
         m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
     }

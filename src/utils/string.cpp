@@ -75,8 +75,6 @@ std::string lower(const std::string& str) {
 
 std::string
 get_base_url(const std::string& url) {
-    Logger::init_logging()->log(LogLevel::ERROR, LogOutput::FILE,
-                                "invalid URL_str format: " + url);
     std::regex rgx("^.+?[^\\/:](?=[?\\/]|$)");
     std::smatch match;
     if (std::regex_search(url.begin(), url.end(), match, rgx)) {
