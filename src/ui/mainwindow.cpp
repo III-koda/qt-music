@@ -16,6 +16,7 @@
 
 #include "ui_mainwindow.h"
 
+#include "../extlib/logger.hpp"
 
 #define DEFAULT_COVER_ART "resources/default_cover_art.jpg"
 
@@ -38,6 +39,7 @@ MainWindow::~MainWindow() {
 
 void
 MainWindow::initialize_components() {
+    Logger::get_instance()->log(LogLevel::DEBUG, "Initializing components");
     this->setWindowIcon(QIcon("../resources/music.png"));
 
     QList<QLabel*> labels = m_ui->centralwidget->findChildren<QLabel*>();
@@ -49,6 +51,14 @@ MainWindow::initialize_components() {
         else if (label->objectName() == "graphics_label") {
             m_graphics_label = label;
             m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
+        }
+        else if (label->objectName() == "background") {
+            m_background = label;
+            m_background->setPixmap(QPixmap(DEFAULT_COVER_ART));
+        }
+        else if (label->objectName() == "blur") {
+            m_blur = label;
+
         }
     }
 
@@ -124,6 +134,8 @@ MainWindow::initialize_components() {
 
 void
 MainWindow::get_notified_song_downloaded(std::string dir) {
+    Logger::get_instance()->log(LogLevel::INFO, 
+                                "Song downloaded in directory: " + dir);
     if (dir == m_current_dir) {
         change_directory(dir);
     }
@@ -180,6 +192,7 @@ MainWindow::change_directory(std::string dir) {
         change_song(0);
         m_current_dir = dir;
     }
+    Logger::get_instance()->log(LogLevel::INFO, "Changing directory: " + dir);
 }
 
 void
@@ -248,6 +261,8 @@ MainWindow::change_song(size_t song_idx) {
     std::string img_path = get_cover_art(m_iplayer.current_song());
     if (!img_path.empty()) {
         m_graphics_label->setPixmap(QPixmap(img_path.c_str()));
+        m_background->setPixmap(QPixmap(img_path.c_str()));
+        m_background->setScaledContents(true);
     } else {
         m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
     }

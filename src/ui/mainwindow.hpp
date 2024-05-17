@@ -68,6 +68,8 @@ private:
     QPushButton* m_replay_button;
     QSlider* m_song_slider;
     QLabel* m_graphics_label;
+    QLabel* m_background;
+    QLabel* m_blur;
     QTimer* m_title_timer; // Timer used for making moving title
     QTimer* m_single_shot_timer; // Timer used for single shot purpose
 

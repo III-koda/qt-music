@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>671</width>
-    <height>435</height>
+    <width>620</width>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,10 +31,10 @@
   <widget class="QLineEdit" name="song_url_input_box">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>20</y>
-     <width>591</width>
-     <height>31</height>
+     <x>50</x>
+     <y>10</y>
+     <width>440</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="inputMethodHints">
@@ -44,10 +44,10 @@
   <widget class="QPushButton" name="download_button">
    <property name="geometry">
     <rect>
-     <x>540</x>
-     <y>100</y>
-     <width>111</width>
-     <height>41</height>
+     <x>500</x>
+     <y>10</y>
+     <width>108</width>
+     <height>71</height>
     </rect>
    </property>
    <property name="text">
@@ -60,10 +60,10 @@
   <widget class="QListWidget" name="download_progress_list">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>150</y>
-     <width>631</width>
-     <height>271</height>
+     <x>10</x>
+     <y>90</y>
+     <width>600</width>
+     <height>200</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -115,10 +115,10 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>100</y>
-     <width>461</width>
-     <height>21</height>
+     <x>10</x>
+     <y>90</y>
+     <width>600</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -138,7 +138,7 @@ color: rgb(224, 27, 36);</string>
     <string/>
    </property>
    <property name="alignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
    <property name="textInteractionFlags">
     <set>Qt::NoTextInteraction</set>
@@ -147,10 +147,10 @@ color: rgb(224, 27, 36);</string>
   <widget class="QLabel" name="dir_label">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>60</y>
-     <width>591</width>
-     <height>31</height>
+     <x>50</x>
+     <y>50</y>
+     <width>440</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="contextMenuPolicy">
@@ -175,10 +175,10 @@ color: rgb(224, 27, 36);</string>
   <widget class="QPushButton" name="dir_select_button">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>60</y>
-     <width>31</width>
-     <height>31</height>
+     <x>10</x>
+     <y>50</y>
+     <width>30</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="contextMenuPolicy">
@@ -205,16 +205,23 @@ border:none;</string>
   <widget class="QLabel" name="url_label">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>20</y>
-     <width>31</width>
-     <height>31</height>
+     <x>10</x>
+     <y>10</y>
+     <width>30</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
     <string>URL</string>
    </property>
   </widget>
+  <zorder>song_url_input_box</zorder>
+  <zorder>download_button</zorder>
+  <zorder>download_progress_list</zorder>
+  <zorder>dir_label</zorder>
+  <zorder>dir_select_button</zorder>
+  <zorder>url_label</zorder>
+  <zorder>warning_label</zorder>
  </widget>
  <resources/>
  <connections/>

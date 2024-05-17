@@ -5,7 +5,6 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../extlib/httplib.h"
 
-
 httplib::Headers BASIC_HTTP_HEADERS = {
     {"User-Agent", "QtMusicPlayer/1.0.0"},
     {"Accept", "application/json"}
@@ -37,7 +36,6 @@ make_http_request(HTTPMethod method,
     route_url = (route_url.empty()? "/" : route_url) + params_str;
 
     httplib::Result response;
-    std::cout << route_url << std::endl;
     switch (method) {
     case HTTPMethod::HEAD:
         response = client.Head(route_url, BASIC_HTTP_HEADERS);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>889</width>
-    <height>544</height>
+    <width>890</width>
+    <height>530</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -157,8 +157,11 @@ border: none</string>
     <property name="autoFillBackground">
      <bool>false</bool>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgba(255, 255, 255, 39);</string>
+    </property>
     <property name="frameShape">
-     <enum>QFrame::Panel</enum>
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="frameShadow">
      <enum>QFrame::Plain</enum>
@@ -176,7 +179,10 @@ border: none</string>
      <enum>QAbstractScrollArea::AdjustIgnored</enum>
     </property>
     <property name="alternatingRowColors">
-     <bool>true</bool>
+     <bool>false</bool>
+    </property>
+    <property name="viewMode">
+     <enum>QListView::ListMode</enum>
     </property>
    </widget>
    <widget class="QPushButton" name="next_song_button">
@@ -281,6 +287,9 @@ border:none;</string>
     <property name="cursor">
      <cursorShape>ArrowCursor</cursorShape>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
+    </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
     </property>
@@ -381,18 +390,62 @@ border: none</string>
      </size>
     </property>
    </widget>
+   <widget class="QLabel" name="background">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>890</width>
+      <height>530</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="blur">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>890</width>
+      <height>530</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgba(121, 120, 120, 227);
+</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <zorder>background</zorder>
+   <zorder>blur</zorder>
+   <zorder>song_title_label</zorder>
+   <zorder>play_pause_button</zorder>
+   <zorder>dir_prompt_button</zorder>
+   <zorder>songs_list</zorder>
+   <zorder>next_song_button</zorder>
+   <zorder>prev_song_button</zorder>
+   <zorder>song_cursor_slider</zorder>
+   <zorder>replay_button</zorder>
+   <zorder>graphics_label</zorder>
+   <zorder>download_song_button</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>889</width>
+     <width>890</width>
      <height>22</height>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
