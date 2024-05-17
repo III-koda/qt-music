@@ -4,8 +4,6 @@
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../extlib/httplib.h"
-#include "../extlib/logger.hpp"
-
 
 httplib::Headers BASIC_HTTP_HEADERS = {
     {"User-Agent", "QtMusicPlayer/1.0.0"},

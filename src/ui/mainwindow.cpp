@@ -143,7 +143,6 @@ MainWindow::get_notified_song_downloaded(std::string dir) {
 
 void
 MainWindow::change_directory(std::string dir) {
-    Logger::get_instance()->log(LogLevel::INFO, "Changing directory: " + dir);
     std::vector<std::string> audio_files = files_in_dir(dir);
 
     if (audio_files.empty()) {
@@ -193,6 +192,7 @@ MainWindow::change_directory(std::string dir) {
         change_song(0);
         m_current_dir = dir;
     }
+    Logger::get_instance()->log(LogLevel::INFO, "Changing directory: " + dir);
 }
 
 void

@@ -37,16 +37,16 @@ public:
 private:
     std::string _log_filepath;
 
-    std::string get_log_level_str(LogLevel level) const {
+    static std::string get_log_level_str(LogLevel level) {
         switch (level) {
         case LogLevel::ERROR:
-            return "[ERROR]  ";
+            return "[ERROR]";
         case LogLevel::WARNING:
-            return "[WARN]   ";
+            return "[WARN]";
         case LogLevel::INFO:
-            return "[INFO]   ";
+            return "[INFO]";
         case LogLevel::DEBUG:
-            return "[DEBUG]  ";
+            return "[DEBUG]";
         }
     }
 

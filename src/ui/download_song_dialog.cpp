@@ -142,18 +142,15 @@ DownloadSongDialog::validate_input() {
     std::string url = m_song_url_input_box->text().toStdString();
     if (url.empty()) {
         warning_popup("Missing URL");
-        Logger::get_instance()->log(LogLevel::WARNING, "NO URL");
         return false;
     }
     if (!url_valid(url)) {
         warning_popup("Invalid URL");
-        Logger::get_instance()->log(LogLevel::WARNING, "invalid URL: " + url);
         return false;
     }
 
     if (m_download_dir.empty()){
         warning_popup("Please select a folder to download to");
-        Logger::get_instance()->log(LogLevel::WARNING, "NO Download dir");
         return false;
     }
     return true;
