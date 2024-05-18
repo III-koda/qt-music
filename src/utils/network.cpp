@@ -46,7 +46,7 @@ make_http_request(HTTPMethod method,
     }
 
     if (!response) {
-        return HTTPResult{false, 0, ""};
+        return HTTPResult{false, 0, "", ""};
     }
-    return HTTPResult{true, response->status, response->body};
+    return HTTPResult{true, response->status, response->body, response->location};
 }
