@@ -15,6 +15,7 @@ struct HTTPResult {
     bool successful;
     int status;
     std::string body;
+    std::string location;
 };
 
 HTTPResult make_http_request(

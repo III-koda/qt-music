@@ -3,6 +3,7 @@
 #include "../extlib/rapidjson/document.h"
 #include "../extlib/rapidjson/writer.h"
 #include "../extlib/rapidjson/stringbuffer.h"
+#include "../extlib/logger.hpp"
 #include "../utils/network.hpp"
 #include "../utils/string.hpp"
 #include "../utils/system.hpp"
@@ -10,9 +11,28 @@
 
 #include <regex>
 
+#define YTDLP_URL "https://github.com/yt-dlp/yt-dlp/releases/"
 
-#define YTDLP_EXE_URL "https://github.com/yt-dlp/yt-dlp/releases/download/2024.04.09/yt-dlp_linux"
+std::string
+get_latest_ytdlp_url() {
+    std::string latest_url = std::string(YTDLP_URL) + "latest";
+    HTTPResult res = make_http_request(HTTPMethod::GET,
+                                       latest_url,
+                                       NO_PARAM,
+                                       true);
 
+    if (res.successful && res.status == 200) {
+        std::vector<std::string> tokens = split_string(res.location, '/');
+        std::string version = tokens[tokens.size() - 1];
+
+        Logger::get_instance()->log(LogLevel::INFO, "Downloading YTDLP version: " + version);
+        return std::string(YTDLP_URL) + "download/" + version + "/yt-dlp_linux/"; 
+
+    } else {
+        Logger::get_instance()->log(LogLevel::ERROR, "failed to optain latest YTDLP url: " + res.location);
+        return "";
+    }
+}
 
 bool download_ytdlp() {
     std::string ytdlp_path = app_directory() + "/yt-dlp";
@@ -20,10 +40,11 @@ bool download_ytdlp() {
     if (exists(ytdlp_path)){
         return true;
     } else {
-        if (download_file(YTDLP_EXE_URL, ytdlp_path)) {
+        if (download_file(get_latest_ytdlp_url(), ytdlp_path)) {
             std::string cmd = std::string("/bin/chmod +x ") + ytdlp_path;
             return WIFEXITED(std::system(cmd.c_str()));
         } else {
+            Logger::get_instance()->log(LogLevel::ERROR, "cannot download YTDLP");
             return false;
         }
     }

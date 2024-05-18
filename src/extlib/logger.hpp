@@ -31,7 +31,7 @@ public:
     }
 
     void set_log_filepath(const std::string& filepath) {
-        _log_filepath = filepath;
+        _log_filepath = filepath + "/qtmusic.log";
     }
 
 private:

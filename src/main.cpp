@@ -9,9 +9,9 @@
 
 void system_init() {
     create_directory(app_directory());
+    Logger::get_instance()->set_log_filepath(app_directory());
     download_spotdl();
     download_ytdlp();
-    Logger::get_instance()->set_log_filepath(app_directory());
 }
 
 
