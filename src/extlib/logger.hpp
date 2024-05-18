@@ -24,14 +24,14 @@ public:
     }
 
     void log(LogLevel log_level, const std::string& message) {
-        std::string log_message = get_current_timestamp_str() +
+        std::string log_message = get_current_timestamp_str() + " " +
                                   get_log_level_str(log_level) +
                                   message;
         log_to_file(log_message);
     }
 
     void set_log_filepath(const std::string& filepath) {
-        _log_filepath = filepath + "/qtmusic.log";
+        _log_filepath = filepath;
     }
 
 private:
@@ -48,6 +48,7 @@ private:
         case LogLevel::DEBUG:
             return "[DEBUG]";
         }
+        return ""; // Should never reach here
     }
 
 
@@ -60,6 +61,7 @@ private:
 
         my_log_file << log_message << std::endl;
         my_log_file.close();
+        return true;
     }
 
     std::string get_current_timestamp_str() const {

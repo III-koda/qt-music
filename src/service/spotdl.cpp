@@ -9,13 +9,13 @@
 
 #include <QString>
 
-#define SPOTDL_LATEST_URL "https://github.com/spotDL/spotify-downloader/releases/latest"
-#define DOWNLOAD_SPOTDL_URL "https://github.com/spotDL/spotify-downloader/releases/download/v"
+#define SPOTDL_URL "https://github.com/spotDL/spotify-downloader/releases"
 
-std::string
+static std::string
 get_latest_spotdl_version_url() {
+    std::string latest_url = std::string(SPOTDL_URL) + "/latest";
     HTTPResult res = make_http_request(HTTPMethod::GET,
-                                       SPOTDL_LATEST_URL,
+                                       latest_url,
                                        NO_PARAM,
                                        true);
 
@@ -24,9 +24,9 @@ get_latest_spotdl_version_url() {
         std::string version = tokens[tokens.size() - 1];
         replace_all_in_place(version, "v", "");
         Logger::get_instance()->log(LogLevel::INFO, "Downloading spotdl version: v" + version);
-        return DOWNLOAD_SPOTDL_URL + version + "/spotdl-" + version + "-linux";
+        return std::string(SPOTDL_URL) + "/download/v" + version + "/spotdl-" + version + "-linux";
     }
-    Logger::get_instance()->log(LogLevel::ERROR, "failed to optain latest SpotDL url: " + res.location);
+    Logger::get_instance()->log(LogLevel::ERROR, "failed to obtain latest SpotDL url: " + res.location);
     return "";
 }
 
@@ -37,7 +37,11 @@ download_spotdl() {
     if (exists(spotdl_path)){
         return true;
     } else {
-        if (download_file(get_latest_spotdl_version_url(), spotdl_path)) {
+        std::string spotdl_url = get_latest_spotdl_version_url();
+        if (spotdl_url.empty()){
+            return false;
+        }
+        if (download_file(spotdl_url, spotdl_path)) {
             std::string cmd = std::string("/bin/chmod +x ") + spotdl_path;
             return WIFEXITED(std::system(cmd.c_str()));
         } else {

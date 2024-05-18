@@ -13,7 +13,7 @@
 
 #define YTDLP_URL "https://github.com/yt-dlp/yt-dlp/releases/"
 
-std::string
+static std::string
 get_latest_ytdlp_url() {
     std::string latest_url = std::string(YTDLP_URL) + "latest";
     HTTPResult res = make_http_request(HTTPMethod::GET,
@@ -29,7 +29,7 @@ get_latest_ytdlp_url() {
         return std::string(YTDLP_URL) + "download/" + version + "/yt-dlp_linux/"; 
 
     } else {
-        Logger::get_instance()->log(LogLevel::ERROR, "failed to optain latest YTDLP url: " + res.location);
+        Logger::get_instance()->log(LogLevel::ERROR, "failed to obtain latest YTDLP url: " + res.location);
         return "";
     }
 }
@@ -40,7 +40,11 @@ bool download_ytdlp() {
     if (exists(ytdlp_path)){
         return true;
     } else {
-        if (download_file(get_latest_ytdlp_url(), ytdlp_path)) {
+        std::string ytdlp_url = get_latest_ytdlp_url();
+        if (ytdlp_url.empty()) {
+            return false;
+        }
+        if (download_file(ytdlp_url, ytdlp_path)) {
             std::string cmd = std::string("/bin/chmod +x ") + ytdlp_path;
             return WIFEXITED(std::system(cmd.c_str()));
         } else {
