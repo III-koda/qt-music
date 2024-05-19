@@ -1,7 +1,7 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#include "../extlib/miniaudio.h"
+#include "../../extlib/miniaudio.h"
 
 #ifdef __cplusplus
 extern "C" {

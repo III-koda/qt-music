@@ -28,6 +28,9 @@ bool download_file(const std::string &file_url, const std::string &save_as);
 std::string get_file_name(const std::string& filepath,
                           bool include_extension=true);
 
+/** @brief Create a file if not exists. */
+bool create_file_if_not_exists(const std::string& file_name);
+
 /** @brief Embed an image into an audio file as metadata. */
 bool embed_image_to_audio_file(const std::string& audio_file_path,
                                const std::string& cover_art_path);
