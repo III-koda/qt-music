@@ -4,6 +4,7 @@
 #include <unordered_set>
 
 #include <QFileDialog>
+#include <QGraphicsBlurEffect>
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QStandardItemModel>
@@ -40,6 +41,7 @@ MainWindow::~MainWindow() {
 void
 MainWindow::initialize_components() {
     Logger::get_instance()->log(LogLevel::DEBUG, "Initializing components");
+
     this->setWindowIcon(QIcon("../resources/music.png"));
 
     QList<QLabel*> labels = m_ui->centralwidget->findChildren<QLabel*>();
@@ -55,6 +57,10 @@ MainWindow::initialize_components() {
         else if (label->objectName() == "background") {
             m_background = label;
             m_background->setPixmap(QPixmap(DEFAULT_COVER_ART));
+            QGraphicsBlurEffect* p_blur = new QGraphicsBlurEffect;
+            p_blur->setBlurRadius(40);
+            p_blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
+            m_background->setGraphicsEffect(p_blur);
         }
         else if (label->objectName() == "blur") {
             m_blur = label;
