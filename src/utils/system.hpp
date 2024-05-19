@@ -3,6 +3,54 @@
 
 #include <string>
 
+#if defined(__linux__) || defined(linux) || defined(__linux)
+#define IS_LINUX
+#endif
+
+#if defined(unix) || defined(__unix) || defined(__unix__)
+#define IS_UNIX
+#endif
+
+#if defined(__APPLE__) || defined(__MACH__)
+#define IS_MAC
+#endif
+
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MINGW32__)
+#define IS_WIN
+#endif
+
+inline bool is_linux() {
+#ifdef IS_LINUX
+    return true;
+#else
+    return false;
+#endif
+}
+
+inline bool is_unix() {
+#ifdef IS_UNIX
+    return true;
+#else
+    return false;
+#endif
+}
+
+inline bool is_mac() {
+#ifdef IS_MAC
+    return true;
+#else
+    return false;
+#endif
+}
+
+inline bool is_windows() {
+#ifdef IS_WIN
+    return true;
+#else
+    return false;
+#endif
+}
+
 
 class CommandResult {
 public:
