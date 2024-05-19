@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../player/isong.hpp"
+#include "../modules/songs_manager/isong.hpp"
 #include "../utils/string.hpp"
 
 std::string get_cover_art(ISongData song_data);

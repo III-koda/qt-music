@@ -12,6 +12,7 @@
 
 #include <QDebug>
 
+#include "../utils/filesys.hpp"
 #include "../utils/system.hpp"
 
 #ifdef IS_LINUX
@@ -42,6 +43,7 @@ public:
 
     void set_log_filepath(const std::string& filepath) {
         _log_filepath = filepath;
+        create_file_if_not_exists(_log_filepath);
     }
 
 private:

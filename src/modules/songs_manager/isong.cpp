@@ -7,8 +7,8 @@
 #include <taglib/tag.h>
 #include <taglib/tpropertymap.h>
 
-#include "../utils/filesys.hpp"
-#include "../utils/string.hpp"
+#include "../../utils/filesys.hpp"
+#include "../../utils/string.hpp"
 
 
 ISongData::ISongData(int song_index,

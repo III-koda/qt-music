@@ -25,12 +25,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           m_ui(new Ui::MainWindow),
                                           PLAY_ICON(QIcon("../resources/play.png")),
                                           PAUSE_ICON(QIcon("../resources/pause.png")),
+                                          m_songs_manager(SongsManager::get_instance()),
                                           m_is_replaying(false) {
     m_ui->setupUi(this);
     initialize_components();
+    m_songs_manager->subscribe_for_song_changes(this);
 }
 
 MainWindow::~MainWindow() {
+    m_songs_manager->unsubscribe_from_song_changes(this);
     delete m_ui;
     delete m_download_song_dialog;
     delete m_empty_song_dir_dialog;
@@ -44,78 +47,57 @@ MainWindow::initialize_components() {
 
     this->setWindowIcon(QIcon("../resources/music.png"));
 
-    QList<QLabel*> labels = m_ui->centralwidget->findChildren<QLabel*>();
-    for (QLabel* label : labels) {
-        if (label->objectName() == "song_title_label") {
-            m_song_title_label = label;
-            m_song_title_label->setText("");
-        }
-        else if (label->objectName() == "graphics_label") {
-            m_graphics_label = label;
-            m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
-        }
-        else if (label->objectName() == "background") {
-            m_background = label;
-            m_background->setPixmap(QPixmap(DEFAULT_COVER_ART));
-            QGraphicsBlurEffect* p_blur = new QGraphicsBlurEffect;
-            p_blur->setBlurRadius(40);
-            p_blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
-            m_background->setGraphicsEffect(p_blur);
-        }
-        else if (label->objectName() == "blur") {
-            m_blur = label;
+    m_song_title_label = m_ui->song_title_label;
+    m_song_title_label->setText("");
 
-        }
-    }
+    m_graphics_label = m_ui->graphics_label;
+    m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
 
-    QList<QPushButton*> push_buttons =
-        m_ui->centralwidget->findChildren<QPushButton*>();
-    for (QPushButton* pbutton : push_buttons) {
-        if (pbutton->objectName() == "play_pause_button") {
-            m_play_pause_button = pbutton;
-            connect(m_play_pause_button,
-                    SIGNAL(clicked()),
-                    this,
-                    SLOT(play_pause_button_clicked()));
-        }
-        else if (pbutton->objectName() == "dir_prompt_button") {
-            m_dir_prompt_button = pbutton;
-            connect(m_dir_prompt_button,
-                    SIGNAL(clicked()),
-                    this,
-                    SLOT(dir_prompt_button_clicked()));
-        }
-        else if (pbutton->objectName() == "download_song_button"){
-            m_download_song_button = pbutton;
-            connect(m_download_song_button,
-                    SIGNAL(clicked()),
-                    this,
-                    SLOT(download_song_button_clicked()));
-        }
-        else if (pbutton->objectName() == "next_song_button") {
-            m_next_song_button = pbutton;
-            connect(m_next_song_button,
-                    SIGNAL(clicked()),
-                    this,
-                    SLOT(next_song_button_clicked()));
-        }
-        else if (pbutton->objectName() == "prev_song_button") {
-            m_prev_song_button = pbutton;
-            connect(m_prev_song_button,
-                    SIGNAL(clicked()),
-                    this,
-                    SLOT(prev_song_button_clicked()));
-        }
-        else if (pbutton->objectName() == "replay_button") {
-            m_replay_button = pbutton;
-            connect(m_replay_button,
-                    SIGNAL(clicked()),
-                    this,
-                    SLOT(replay_button_clicked()));
-        }
-    }
+    m_background = m_ui->background;
+    m_background->setPixmap(QPixmap(DEFAULT_COVER_ART));
+    QGraphicsBlurEffect* p_blur = new QGraphicsBlurEffect;
+    p_blur->setBlurRadius(40);
+    p_blur->setBlurHints(QGraphicsBlurEffect::QualityHint);
+    m_background->setGraphicsEffect(p_blur);
 
-    m_songs_list = m_ui->centralwidget->findChild<QListWidget*>();
+    m_play_pause_button = m_ui->play_pause_button;
+    connect(m_play_pause_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(play_pause_button_clicked()));
+
+    m_dir_prompt_button = m_ui->dir_prompt_button;
+    connect(m_dir_prompt_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(dir_prompt_button_clicked()));
+
+    m_download_song_button = m_ui->download_song_button;
+    connect(m_download_song_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(download_song_button_clicked()));
+
+    m_next_song_button = m_ui->next_song_button;
+    connect(m_next_song_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(next_song_button_clicked()));
+
+    m_prev_song_button = m_ui->prev_song_button;
+    connect(m_prev_song_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(prev_song_button_clicked()));
+
+    m_replay_button = m_ui->replay_button;
+    connect(m_replay_button,
+            SIGNAL(clicked()),
+            this,
+            SLOT(replay_button_clicked()));
+
+
+    m_songs_list = m_ui->songs_list;
     connect(m_songs_list,
             SIGNAL(itemClicked(QListWidgetItem*)),
             this,
@@ -125,7 +107,7 @@ MainWindow::initialize_components() {
     QScrollBar* hor_scroll_bar = m_songs_list->horizontalScrollBar();
     hor_scroll_bar->setStyleSheet(CUSTOM_HORIZONTAL_SCROLL_BAR);
 
-    m_song_slider = m_ui->centralwidget->findChild<QSlider*>();
+    m_song_slider = m_ui->song_cursor_slider;
     connect(m_song_slider,
             SIGNAL(sliderReleased()),
             this,
@@ -157,7 +139,7 @@ MainWindow::change_directory(std::string dir) {
 
     std::string curr_song_file_path = "";
     if (m_songs_list->count() > 0 || dir == m_current_dir) {
-        ISongData curr_song = m_iplayer.current_song();
+        ISongData curr_song = m_songs_manager->current_song();
         curr_song_file_path = curr_song.get_song_file_path();
     }
 
@@ -165,11 +147,11 @@ MainWindow::change_directory(std::string dir) {
     while (m_songs_list->count() > 0) {
         m_songs_list->takeItem(0);
     }
-    m_iplayer.clear_songs();
+    m_songs_manager->clear_songs();
 
     for (const std::string& filepath : audio_files) {
         // TODO: Check if file is audio file
-        ISongData song_data = m_iplayer.add_song_to_list(filepath);
+        ISongData song_data = m_songs_manager->add_song_to_list(filepath);
         if (!song_data.is_valid_song()) {
             continue;
         }
@@ -177,17 +159,17 @@ MainWindow::change_directory(std::string dir) {
     }
 
     if (!curr_song_file_path.empty()) {
-        for (int i = 0; i < m_iplayer.songs_count(); i++) {
-            ISongData song = m_iplayer.get_song_at_index(i);
+        for (int i = 0; i < m_songs_manager->songs_count(); i++) {
+            ISongData song = m_songs_manager->get_song_at_index(i);
             if (curr_song_file_path == song.get_song_file_path()) {
                 m_songs_list->setCurrentRow(i);
-                m_iplayer.set_current_song_index(i);
+                m_songs_manager->set_current_song_index(i);
                 break;
             }
         }
     }
 
-    bool has_songs = m_iplayer.songs_count() != 0 && m_songs_list->count() != 0;
+    bool has_songs = m_songs_manager->songs_count() != 0 && m_songs_list->count() != 0;
 
     m_play_pause_button->setEnabled(has_songs);
     m_next_song_button->setEnabled(has_songs);
@@ -203,12 +185,12 @@ MainWindow::change_directory(std::string dir) {
 
 void
 MainWindow::play_pause_button_clicked() {
-    if (m_iplayer.is_playing()) {
+    if (m_songs_manager->is_playing()) {
         m_play_pause_button->setIcon(PLAY_ICON);
-        m_iplayer.stop_song();
+        m_songs_manager->stop_song();
     } else {
         m_play_pause_button->setIcon(PAUSE_ICON);
-        m_iplayer.continue_song();
+        m_songs_manager->continue_song();
     }
 }
 
@@ -264,7 +246,7 @@ MainWindow::change_song(size_t song_idx) {
     m_current_song_idx = song_idx;
     play_song();
 
-    std::string img_path = get_cover_art(m_iplayer.current_song());
+    std::string img_path = get_cover_art(m_songs_manager->current_song());
     if (!img_path.empty()) {
         m_graphics_label->setPixmap(QPixmap(img_path.c_str()));
         m_background->setPixmap(QPixmap(img_path.c_str()));
@@ -275,23 +257,9 @@ MainWindow::change_song(size_t song_idx) {
 }
 
 void
-MainWindow::song_end_handler() {
-    if (!m_is_replaying) {
-        next_song_button_clicked();
-    } else {
-        play_song();
-    }
-}
-
-void
-MainWindow::song_progressed_duration_updated(float progressed_duration) {
-    m_song_slider->setValue(round(progressed_duration));
-}
-
-void
 MainWindow::song_slider_released() {
     int value = m_song_slider->value();
-    m_iplayer.progress_to(value);
+    m_songs_manager->progress_to(value);
 }
 
 void
@@ -301,23 +269,10 @@ MainWindow::play_song() {
     m_title_timer = new QTimer();
 
     // Play the song
-    m_iplayer.play_song(m_current_song_idx);
-
-    SongObserver* observer = new SongObserver(&m_iplayer);
-    connect(observer,
-            SIGNAL(current_song_ended()),
-            SLOT(song_end_handler()));
-    connect(observer,
-            SIGNAL(song_progressed_duration_changed(float)),
-            SLOT(song_progressed_duration_updated(float)));
-    connect(observer,
-            SIGNAL(finished()),
-            observer,
-            SLOT(deleteLater()));
-    observer->start();
+    m_songs_manager->play_song(m_current_song_idx);
 
     // Update display title
-    ISongData current_song = m_iplayer.current_song();
+    ISongData current_song = m_songs_manager->current_song();
     m_song_title_label->setText(current_song.generate_display_title().c_str());
     if (m_song_title_label->fontMetrics().width(m_song_title_label->text())
             >= m_song_title_label->width()) {
@@ -329,7 +284,7 @@ MainWindow::play_song() {
 
     m_songs_list->item(m_current_song_idx)->setSelected(true);
     m_play_pause_button->setIcon(PAUSE_ICON);
-    m_song_slider->setMaximum(ceil(m_iplayer.song_duration()));
+    m_song_slider->setMaximum(ceil(m_songs_manager->song_duration()));
     m_song_slider->setValue(0);
 }
 
@@ -353,4 +308,18 @@ MainWindow::make_moving_title() {
         m_single_shot_timer = new QTimer();
     });
     m_single_shot_timer->start(2000);
+}
+
+void
+MainWindow::current_song_ended() {
+    if (!m_is_replaying) {
+        next_song_button_clicked();
+    } else {
+        play_song();
+    }
+}
+
+void
+MainWindow::song_progressed_duration_changed(float progressed_duration) {
+    m_song_slider->setValue(round(progressed_duration));
 }

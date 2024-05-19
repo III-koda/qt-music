@@ -118,6 +118,23 @@ get_file_name(const std::string& filepath, bool include_extension) {
 }
 
 
+bool
+create_file_if_not_exists(const std::string& file_name) {
+    std::ifstream in_file(file_name);
+    if (in_file.good()) {
+        return true; // File already exists
+    } else {
+        // File does not exist, create it
+        std::ofstream out_file(file_name);
+        if (out_file) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+
 class ImageFile : public TagLib::File {
 public:
     ImageFile(const char *file) : TagLib::File(file) {}

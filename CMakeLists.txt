@@ -14,9 +14,9 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
     src/main.cpp
-    src/player/audio.cpp
-    src/player/iplayer.cpp
-    src/player/isong.cpp
+    src/modules/songs_manager/audio.cpp
+    src/modules/songs_manager/isong.cpp
+    src/modules/songs_manager/songs_manager.cpp
     src/service/cover_art_api.cpp
     src/service/spotdl.cpp
     src/service/ytdlp.cpp
