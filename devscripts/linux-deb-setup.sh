@@ -30,11 +30,11 @@ echo -e 'alias vcpkg="$HOME/vcpkg/vcpkg"' >> $HOME/$RCFILE;
 export VCPKG_ROOT="$HOME/vcpkg";
 alias vcpkg="$HOME/vcpkg/vcpkg";
 
+sudo apt-get update;
+sudo apt-get install -y ninja-build;
 # Building Qt with a package manager seems to be a pain (at least in Linux).
 # It takes a very very long time and it is reported to have a lot of issues
 # as well. So we will install it with apt-get instead.
-echo "Installing Qt5..."
-sudo apt-get update;
 sudo apt-get install -y qtbase5-dev;
 
 cd $WORKDIR;
