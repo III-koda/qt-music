@@ -158,7 +158,7 @@ border: none</string>
      <bool>false</bool>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgba(255, 255, 255, 170);</string>
+     <string notr="true">background-color: rgba(255, 255, 255, 140);</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -177,6 +177,9 @@ border: none</string>
     </property>
     <property name="sizeAdjustPolicy">
      <enum>QAbstractScrollArea::AdjustIgnored</enum>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
     </property>
     <property name="alternatingRowColors">
      <bool>false</bool>
@@ -399,6 +402,12 @@ border: none</string>
       <height>530</height>
      </rect>
     </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(99, 69, 44);</string>
+    </property>
     <property name="text">
      <string/>
     </property>
@@ -415,8 +424,11 @@ border: none</string>
       <height>530</height>
      </rect>
     </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
     <property name="styleSheet">
-     <string notr="true">background-color: qlineargradient(spread:pad, x1:0.502, y1:1, x2:0.488, y2:0.0005, stop:0 rgba(250, 250, 250, 30), stop:0.696517 rgba(250, 250, 250, 180));
+     <string notr="true">background-color: qlineargradient(spread:pad, x1:0.502, y1:1, x2:0.488, y2:0.0005, stop:0 rgba(250, 250, 250, 0), stop:1 rgba(250, 250, 250, 250));
 </string>
     </property>
     <property name="text">
