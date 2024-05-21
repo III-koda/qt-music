@@ -1,0 +1,7 @@
+{
+  "dependencies": [
+    "openssl",
+    "taglib",
+    "zlib"
+  ]
+}

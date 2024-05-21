@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 project(qt-music-player VERSION 0.1 LANGUAGES CXX)
 
@@ -9,6 +9,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(taglib CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
+find_package(ZLIB REQUIRED)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
@@ -20,6 +23,10 @@ set(PROJECT_SOURCES
     src/service/cover_art_api.cpp
     src/service/spotdl.cpp
     src/service/ytdlp.cpp
+    src/ui/download_song_dialog.cpp
+    src/ui/download_song_dialog.ui
+    src/ui/empty_song_dir_dialog.cpp
+    src/ui/emptysongdirdialog.ui
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
     src/utils/filesys.cpp
@@ -41,16 +48,11 @@ else()
     else()
         add_executable(qt-music-player
             ${PROJECT_SOURCES}
-            src/ui/download_song_dialog.hpp src/ui/download_song_dialog.cpp src/ui/download_song_dialog.ui
-            src/ui/empty_song_dir_dialog.hpp src/ui/empty_song_dir_dialog.cpp src/ui/emptysongdirdialog.ui
-
         )
     endif()
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    set(LIBS dl pthread tag ssl crypto)
-endif()
+set(LIBS dl pthread OpenSSL::SSL OpenSSL::Crypto TagLib::tag TagLib::tag_c TagLib::TagLib ZLIB::ZLIB)
 target_link_libraries(qt-music-player PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${LIBS})
 
 set_target_properties(qt-music-player PROPERTIES
