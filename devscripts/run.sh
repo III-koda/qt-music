@@ -5,4 +5,4 @@ BUILD_DIR="build"
 [ ! -d $BUILD_DIR ] && mkdir $BUILD_DIR
 cd $BUILD_DIR
 
-cmake .. && make && ./qt-music-player
+cmake .. && ninja && ./qt-music-player
