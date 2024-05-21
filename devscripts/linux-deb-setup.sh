@@ -2,6 +2,11 @@
 
 WORKDIR=$(pwd);
 
+if [ -d "build" ]; then
+    echo -e "\e[33mYou seems to have an existing build directory...";
+    echo -e "We recommend remove the build directory and do a clean build if this script fails\e[0m";
+fi
+
 if [ ! -d "$HOME/vcpkg" ]; then
     echo "Installing VCPKG..."
     cd $HOME;
