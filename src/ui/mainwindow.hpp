@@ -52,6 +52,7 @@ private slots:
     void next_song_button_clicked();
     void prev_song_button_clicked();
     void replay_button_clicked();
+    void song_slider_clicked();
     void song_slider_released();
 
 private:
@@ -85,6 +86,8 @@ private:
     TitleController* m_title_controller;
     bool m_is_replaying;
     std::string m_current_dir;
+    bool m_is_song_slider_pressed;
+    bool m_skip_next_song_slider_update_signal;
 };
 
 #endif // MAINWINDOW_H

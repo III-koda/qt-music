@@ -26,7 +26,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
                                           PLAY_ICON(QIcon("../resources/play.png")),
                                           PAUSE_ICON(QIcon("../resources/pause.png")),
                                           m_songs_manager(SongsManager::get_instance()),
-                                          m_is_replaying(false) {
+                                          m_is_replaying(false),
+                                          m_is_song_slider_pressed(false),
+                                          m_skip_next_song_slider_update_signal(false) {
     m_ui->setupUi(this);
     initialize_components();
     m_songs_manager->subscribe_for_song_changes(this);
@@ -107,6 +109,10 @@ MainWindow::initialize_components() {
     hor_scroll_bar->setStyleSheet(CUSTOM_HORIZONTAL_SCROLL_BAR);
 
     m_song_slider = m_ui->song_cursor_slider;
+    connect(m_song_slider,
+            SIGNAL(sliderPressed()),
+            this,
+            SLOT(song_slider_clicked()));
     connect(m_song_slider,
             SIGNAL(sliderReleased()),
             this,
@@ -241,9 +247,16 @@ MainWindow::replay_button_clicked() {
 }
 
 void
+MainWindow::song_slider_clicked() {
+    m_is_song_slider_pressed = true;
+    m_skip_next_song_slider_update_signal = true;
+}
+
+void
 MainWindow::song_slider_released() {
     int value = m_song_slider->value();
     m_songs_manager->progress_to(value);
+    m_is_song_slider_pressed = false;
 }
 
 void
@@ -295,5 +308,12 @@ MainWindow::current_song_ended() {
 
 void
 MainWindow::song_progressed_duration_changed(float progressed_duration) {
+    if (m_is_song_slider_pressed) {
+        return;
+    }
+    if (m_skip_next_song_slider_update_signal) {
+        m_skip_next_song_slider_update_signal = false;
+        return;
+    }
     m_song_slider->setValue(round(progressed_duration));
 }
