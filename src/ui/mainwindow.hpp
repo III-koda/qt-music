@@ -17,6 +17,7 @@
 #include "../modules/songs_manager/songs_manager.hpp"
 #include "download_song_dialog.hpp"
 #include "empty_song_dir_dialog.hpp"
+#include "title_controller.hpp"
 
 
 QT_BEGIN_NAMESPACE
@@ -58,7 +59,7 @@ private:
     void change_song(size_t song_idx);
     void play_song();
     void change_directory(std::string dir);
-    void make_moving_title();
+    void update_cover_art();
 
     Ui::MainWindow* m_ui;
     QLabel* m_song_title_label;
@@ -72,8 +73,6 @@ private:
     QSlider* m_song_slider;
     QLabel* m_graphics_label;
     QLabel* m_background;
-    QTimer* m_title_timer; // Timer used for making moving title
-    QTimer* m_single_shot_timer; // Timer used for single shot purpose
 
     DownloadSongDialog* m_download_song_dialog;
     EmptySongDirDialog* m_empty_song_dir_dialog;
@@ -83,6 +82,7 @@ private:
 
     size_t m_current_song_idx;
     SongsManager* m_songs_manager;
+    TitleController* m_title_controller;
     bool m_is_replaying;
     std::string m_current_dir;
 };
