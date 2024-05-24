@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(qt-music-player VERSION 0.1 LANGUAGES CXX)
+project(bragii VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -29,6 +29,7 @@ set(PROJECT_SOURCES
     src/ui/emptysongdirdialog.ui
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
+    src/ui/title_controller.cpp
     src/utils/filesys.cpp
     src/utils/network.cpp
     src/utils/string.cpp
@@ -36,26 +37,26 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(qt-music-player
+    qt_add_executable(bragii
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
 else()
     if(ANDROID)
-        add_library(qt-music-player SHARED
+        add_library(bragii SHARED
             ${PROJECT_SOURCES}
         )
     else()
-        add_executable(qt-music-player
+        add_executable(bragii
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
 set(LIBS dl pthread OpenSSL::SSL OpenSSL::Crypto TagLib::tag TagLib::tag_c TagLib::TagLib ZLIB::ZLIB)
-target_link_libraries(qt-music-player PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${LIBS})
+target_link_libraries(bragii PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${LIBS})
 
-set_target_properties(qt-music-player PROPERTIES
+set_target_properties(bragii PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -63,7 +64,7 @@ set_target_properties(qt-music-player PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-install(TARGETS qt-music-player
+install(TARGETS bragii
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
@@ -78,5 +79,5 @@ add_custom_command(
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(qt-music-player)
+    qt_finalize_executable(bragii)
 endif()

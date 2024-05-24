@@ -13,6 +13,8 @@
 #include <taglib/id3v2frame.h>
 #include <taglib/attachedpictureframe.h>
 
+#include <QDebug>
+
 
 static std::string
 generate_image_file_path(ISongData song_data) {
@@ -35,7 +37,7 @@ get_recording_data(ISongData song_data) {
                                        "https://musicbrainz.org/ws/2/recording",
                                        params);
     rapidjson::Document d;
-    if (!res.successful) {
+    if (!res.successful || res.status != 200) {
         return d;
     }
     d.Parse(res.body.c_str());
@@ -62,7 +64,7 @@ get_release_data(std::string release_id) {
 
     std::string json_file_url = tokens[1];
     res = make_http_request(HTTPMethod::GET, json_file_url, NO_PARAM, true);
-    if (!res.successful) {
+    if (!res.successful || res.status != 200) {
         return d;
     }
     d.Parse(res.body.c_str());
@@ -77,16 +79,23 @@ get_cover_art_from_music_brainz(ISongData song_data)
     }
 
     rapidjson::Document recording_json = get_recording_data(song_data);
-    if (!recording_json.IsObject()) {
+    if (!recording_json.IsObject() ||
+            !recording_json.HasMember("recordings") ||
+            recording_json["recordings"].Empty() ||
+            !recording_json["recordings"][0].HasMember("releases") ||
+            recording_json["recordings"][0]["releases"].Empty() ||
+            !recording_json["recordings"][0]["releases"][0].HasMember("id")) {
         return "";
     }
     std::string release_id = recording_json["recordings"][0]["releases"][0]["id"].GetString();
 
     rapidjson::Document release_json = get_release_data(release_id);
-    if (!release_json.IsObject()) {
+    if (!release_json.IsObject() ||
+            !release_json.HasMember("images") ||
+            release_json["images"].Empty() ||
+            !release_json["images"][0].HasMember("image")) {
         return "";
     }
-
     std::string image_url = release_json["images"][0]["image"].GetString();
 
     std::string img_file = generate_image_file_path(song_data);

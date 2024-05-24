@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <unordered_set>
+#include <thread>
 
 #include <QFileDialog>
 #include <QGraphicsBlurEffect>
@@ -9,7 +10,6 @@
 #include <QScrollBar>
 #include <QStandardItemModel>
 #include <QLabel>
-#include <QTimer>
 
 #include "../utils/filesys.hpp"
 #include "../service/cover_art_api.hpp"
@@ -37,8 +37,7 @@ MainWindow::~MainWindow() {
     delete m_ui;
     delete m_download_song_dialog;
     delete m_empty_song_dir_dialog;
-    delete m_title_timer;
-    delete m_single_shot_timer;
+    delete m_title_controller;
 }
 
 void
@@ -113,11 +112,11 @@ MainWindow::initialize_components() {
             this,
             SLOT(song_slider_released()));
 
-    m_title_timer = new QTimer();
-    m_single_shot_timer = new QTimer();
-
     m_download_song_dialog = new DownloadSongDialog(this);
     m_empty_song_dir_dialog = new EmptySongDirDialog(this);
+
+    m_title_controller = new TitleController(m_song_title_label);
+    m_title_controller->start();
 }
 
 void
@@ -242,72 +241,47 @@ MainWindow::replay_button_clicked() {
 }
 
 void
-MainWindow::change_song(size_t song_idx) {
-    m_current_song_idx = song_idx;
-    play_song();
-
-    std::string img_path = get_cover_art(m_songs_manager->current_song());
-    if (!img_path.empty()) {
-        m_graphics_label->setPixmap(QPixmap(img_path.c_str()));
-        m_background->setPixmap(QPixmap(img_path.c_str()));
-        m_background->setScaledContents(true);
-    } else {
-        m_graphics_label->setPixmap(QPixmap(DEFAULT_COVER_ART));
-    }
-}
-
-void
 MainWindow::song_slider_released() {
     int value = m_song_slider->value();
     m_songs_manager->progress_to(value);
 }
 
 void
-MainWindow::play_song() {
-    m_single_shot_timer->stop();
-    delete m_title_timer;
-    m_title_timer = new QTimer();
+MainWindow::change_song(size_t song_idx) {
+    m_current_song_idx = song_idx;
 
-    // Play the song
-    m_songs_manager->play_song(m_current_song_idx);
+    std::thread cover_art_thread(&MainWindow::update_cover_art, this);
+
+    play_song();
 
     // Update display title
     ISongData current_song = m_songs_manager->current_song();
-    m_song_title_label->setText(current_song.generate_display_title().c_str());
-    if (m_song_title_label->fontMetrics().width(m_song_title_label->text())
-            >= m_song_title_label->width()) {
-        m_song_title_label->setAlignment(Qt::AlignLeft);
-        make_moving_title();
-    } else {
-        m_song_title_label->setAlignment(Qt::AlignCenter);
-    }
+    m_title_controller->change_title(current_song.generate_display_title().c_str());
 
     m_songs_list->item(m_current_song_idx)->setSelected(true);
     m_play_pause_button->setIcon(PAUSE_ICON);
-    m_song_slider->setMaximum(ceil(m_songs_manager->song_duration()));
-    m_song_slider->setValue(0);
+
+    cover_art_thread.join();
 }
 
 void
-MainWindow::make_moving_title() {
-    size_t extra_space_count =
-            m_song_title_label->width() / QFontMetrics(m_song_title_label->font()).width(' ');
-    m_song_title_label->setText(m_song_title_label->text() +
-                                std::string(extra_space_count, ' ').c_str());
+MainWindow::update_cover_art() {
+    std::string img_path = get_cover_art(
+            m_songs_manager->get_song_at_index(m_current_song_idx));
+    img_path = !img_path.empty() ? img_path : DEFAULT_COVER_ART;
 
-    connect(m_title_timer, &QTimer::timeout, [&]() {
-        QString text = m_song_title_label->text();
-        text.push_back(text.front());
-        text.remove(0, 1);
-        m_song_title_label->setText(text);
-    });
+    m_graphics_label->setPixmap(QPixmap(img_path.c_str()));
+    m_background->setPixmap(QPixmap(img_path.c_str()));
+    m_background->setScaledContents(true);
+}
 
-    connect(m_single_shot_timer, &QTimer::timeout, [&] {
-        m_title_timer->start(200);
-        delete m_single_shot_timer;
-        m_single_shot_timer = new QTimer();
-    });
-    m_single_shot_timer->start(2000);
+void
+MainWindow::play_song() {
+    // Play the song
+    m_songs_manager->play_song(m_current_song_idx);
+
+    m_song_slider->setMaximum(ceil(m_songs_manager->song_duration()));
+    m_song_slider->setValue(0);
 }
 
 void
