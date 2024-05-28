@@ -31,7 +31,7 @@ export VCPKG_ROOT="$HOME/vcpkg";
 alias vcpkg="$HOME/vcpkg/vcpkg";
 
 sudo apt-get update;
-sudo apt-get install -y curl zip unzip tar ninja-build;
+sudo apt-get install -y curl ninja-build pkg-config tar unzip zip;
 # Building Qt with a package manager seems to be a pain (at least in Linux).
 # It takes a very very long time and it is reported to have a lot of issues
 # as well. So we will install it with apt-get instead.
