@@ -61,7 +61,7 @@ download_spotify_song(const std::string spotify_url, std::string save_dir) {
     }
 
     std::string command = std::string("cd ") + save_dir + " && " +
-                          app_directory() + "/spotdl " + spotify_url;
+                          app_directory() + "/spotdl --bitrate 192k " + spotify_url;
 
     int result = std::system(command.c_str());
     if (result != 0) {
