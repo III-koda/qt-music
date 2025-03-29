@@ -15,6 +15,10 @@
 #include "../utils/filesys.hpp"
 #include "../utils/system.hpp"
 
+#ifdef IS_MAC
+#include <fcntl.h>
+#endif // IS_MAC
+
 #ifdef IS_LINUX
 #include <sys/file.h>
 #endif // IS_LINUX

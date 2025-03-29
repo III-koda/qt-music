@@ -57,6 +57,9 @@ bool exists(std::string path) {
 }
 
 void rename_file(const std::string& oldname, const std::string& newname) {
+    if (!exists(oldname)) {
+        return;
+    }
     fs::rename(oldname, newname);
 }
 
