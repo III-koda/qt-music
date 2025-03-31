@@ -47,8 +47,11 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+# VCPKG stuff
+vcpkg_installed
+
 # VSCode
 .vscode/
 
-#log
+# Log
 .log

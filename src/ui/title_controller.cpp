@@ -19,7 +19,12 @@ TitleController::~TitleController() {
 
 inline bool
 needs_animation(QLabel* title_widget, std::string title) {
-    return title_widget->fontMetrics().width(title.c_str()) >= title_widget->width();
+#if (QT_VERSION>=QT_VERSION_CHECK(5, 15, 0))
+    int title_str_width = title_widget->fontMetrics().horizontalAdvance(title.c_str());
+#else
+    int title_str_width = title_widget->fontMetrics().width(title.c_str());
+#endif // QT_VERSION>=QT_VERSION_CHECK(5, 15, 0)
+    return title_str_width >= title_widget->width();
 }
 
 void
@@ -36,7 +41,11 @@ TitleController::change_title(std::string new_title) {
         return;
     }
     size_t extra_space_count =
+#if (QT_VERSION>=QT_VERSION_CHECK(5, 15, 0))
+            m_title_widget->width() / QFontMetrics(m_title_widget->font()).horizontalAdvance(' ');
+#else
             m_title_widget->width() / QFontMetrics(m_title_widget->font()).width(' ');
+#endif // QT_VERSION>=QT_VERSION_CHECK(5, 15, 0)
     m_title_widget->setText((new_title + std::string(extra_space_count, ' ')).c_str());
     m_title_widget->setAlignment(Qt::AlignLeft);
 }

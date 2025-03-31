@@ -23,10 +23,10 @@ get_latest_spotdl_version_url() {
         std::vector<std::string> tokens = split_string(res.location, '/');
         std::string version = tokens[tokens.size() - 1];
         replace_all_in_place(version, "v", "");
-        Logger::get_instance()->log(LogLevel::INFO, "Downloading spotdl version: v" + version);
+        Logger::get_instance()->log(LogLevel::LINFO, "Downloading spotdl version: v" + version);
         return std::string(SPOTDL_URL) + "/download/v" + version + "/spotdl-" + version + "-linux";
     }
-    Logger::get_instance()->log(LogLevel::ERROR, "failed to obtain latest SpotDL url: " + res.location);
+    Logger::get_instance()->log(LogLevel::LERROR, "failed to obtain latest SpotDL url: " + res.location);
     return "";
 }
 
@@ -43,9 +43,10 @@ download_spotdl() {
         }
         if (download_file(spotdl_url, spotdl_path)) {
             std::string cmd = std::string("/bin/chmod +x ") + spotdl_path;
-            return WIFEXITED(std::system(cmd.c_str()));
+            int retval = std::system(cmd.c_str());
+            return retval == 0;
         } else {
-            Logger::get_instance()->log(LogLevel::ERROR, "cannot download SpotDL");
+            Logger::get_instance()->log(LogLevel::LERROR, "cannot download SpotDL");
             return false;
         }
     }

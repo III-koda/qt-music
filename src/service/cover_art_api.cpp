@@ -5,6 +5,7 @@
 #include "../extlib/rapidjson/stringbuffer.h"
 #include "../utils/filesys.hpp"
 #include "../utils/network.hpp"
+#include "../utils/system.hpp"
 
 #include <sys/stat.h>
 #include <taglib/taglib.h>
@@ -21,7 +22,11 @@ generate_image_file_path(ISongData song_data) {
     std::string DIR = "/tmp/qt-music";
     struct stat sb;
     if (stat(DIR.c_str(), &sb) != 0) {
+#ifdef IS_WIN
+        (void)mkdir(DIR.c_str());
+#else
         (void)mkdir(DIR.c_str(), 0777);
+#endif // IS_WIN
     }
     return DIR + "/cover_art.jpg";
 }

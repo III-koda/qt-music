@@ -44,7 +44,7 @@ MainWindow::~MainWindow() {
 
 void
 MainWindow::initialize_components() {
-    Logger::get_instance()->log(LogLevel::DEBUG, "Initializing components");
+    Logger::get_instance()->log(LogLevel::LDEBUG, "Initializing components");
 
     this->setWindowIcon(QIcon("../resources/music.png"));
 
@@ -127,7 +127,7 @@ MainWindow::initialize_components() {
 
 void
 MainWindow::get_notified_song_downloaded(std::string dir) {
-    Logger::get_instance()->log(LogLevel::INFO, 
+    Logger::get_instance()->log(LogLevel::LINFO, 
                                 "Song downloaded in directory: " + dir);
     if (dir == m_current_dir) {
         change_directory(dir);
@@ -185,7 +185,7 @@ MainWindow::change_directory(std::string dir) {
         change_song(0);
         m_current_dir = dir;
     }
-    Logger::get_instance()->log(LogLevel::INFO, "Changing directory: " + dir);
+    Logger::get_instance()->log(LogLevel::LINFO, "Changing directory: " + dir);
 }
 
 void

@@ -2,6 +2,32 @@ cmake_minimum_required(VERSION 3.10)
 
 project(bragii VERSION 0.1 LANGUAGES CXX)
 
+# Function to check if a compiler exists by running --version
+function(check_compiler compiler_var compiler_name)
+    execute_process(
+        COMMAND ${compiler_name} --version
+        RESULT_VARIABLE result
+        OUTPUT_QUIET ERROR_QUIET
+    )
+    if(result EQUAL 0)
+        set(${compiler_var} ${compiler_name} PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Check for available compilers
+check_compiler(FOUND_CLANG clang++)
+check_compiler(FOUND_GCC g++)
+
+if(FOUND_CLANG)
+    message(STATUS "Using Clang: ${FOUND_CLANG}")
+    set(CMAKE_CXX_COMPILER ${FOUND_CLANG})
+elseif(FOUND_GCC)
+    message(STATUS "Using GCC: ${FOUND_GCC}")
+    set(CMAKE_CXX_COMPILER ${FOUND_GCC})
+else()
+    message(FATAL_ERROR "No suitable C++ compiler found. Please install Clang or GCC and make sure they are added to PATH.")
+endif()
+
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -9,6 +35,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Find the necessary packages
 find_package(taglib CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -53,7 +80,13 @@ else()
     endif()
 endif()
 
-set(LIBS dl pthread OpenSSL::SSL OpenSSL::Crypto TagLib::tag TagLib::tag_c TagLib::TagLib ZLIB::ZLIB)
+set(LIBS OpenSSL::SSL OpenSSL::Crypto TagLib::tag TagLib::tag_c TagLib::TagLib ZLIB::ZLIB)
+if(UNIX)
+    list(APPEND LIBS dl pthread)
+endif()
+if(WIN32)
+    list(APPEND LIBS ws2_32 crypt32)
+endif()
 target_link_libraries(bragii PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${LIBS})
 
 set_target_properties(bragii PROPERTIES

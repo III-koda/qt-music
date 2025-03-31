@@ -19,12 +19,15 @@
 #include <sys/file.h>
 #endif // IS_LINUX
 
+#ifdef IS_WIN
+#include <fcntl.h>
+#endif
 
 enum class LogLevel {
-    INFO,
-    WARNING,
-    ERROR,
-    DEBUG
+    LINFO,
+    LWARNING,
+    LERROR,
+    LDEBUG
 };
 
 class Logger {
@@ -49,13 +52,13 @@ public:
 private:
     static std::string get_log_level_str(LogLevel level) {
         switch (level) {
-        case LogLevel::ERROR:
+        case LogLevel::LERROR:
             return "[ERROR]";
-        case LogLevel::WARNING:
+        case LogLevel::LWARNING:
             return "[WARN]";
-        case LogLevel::INFO:
+        case LogLevel::LINFO:
             return "[INFO]";
-        case LogLevel::DEBUG:
+        case LogLevel::LDEBUG:
             return "[DEBUG]";
         }
         return ""; // Should never reach here
@@ -94,31 +97,31 @@ private:
     }
 
     int lock_file() {
-        if (is_linux()) {
-            const char* file_path = _log_filepath.c_str();
-            int logfd = open(file_path, O_RDONLY);
-            if (logfd == -1) {
-                qDebug() << "Failed open log file: " << file_path;
-                return -1;
-            }
-            if (flock(logfd, LOCK_EX) == -1) {
-                qDebug() << "Failed to lock log file " << file_path;
-                return -1;
-            }
-            return logfd;
+#if defined(IS_LINUX) || defined(IS_MAC)
+        const char* file_path = _log_filepath.c_str();
+        int logfd = open(file_path, O_RDONLY);
+        if (logfd == -1) {
+            qDebug() << "Failed open log file: " << file_path;
+            return -1;
         }
+        if (flock(logfd, LOCK_EX) == -1) {
+            qDebug() << "Failed to lock log file " << file_path;
+            return -1;
+        }
+        return logfd;
+#endif // IS_LINUX || IS_MAC
         return 0;
     }
 
     bool unlock_file(int logfd) {
-        if (is_linux()) {
-            const char* file_path = _log_filepath.c_str();
-            if (logfd == -1) {
-                qDebug() << "Failed to open log file" << file_path;
-                return false;
-            }
-            return flock(logfd, LOCK_UN) == 0;
+#if defined(IS_LINUX) || defined(IS_MAC)
+        const char* file_path = _log_filepath.c_str();
+        if (logfd == -1) {
+            qDebug() << "Failed to open log file" << file_path;
+            return false;
         }
+        return flock(logfd, LOCK_UN) == 0;
+#endif // IS_LINUX || IS_MAC
         return true;
     }
 

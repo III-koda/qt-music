@@ -25,11 +25,11 @@ get_latest_ytdlp_url() {
         std::vector<std::string> tokens = split_string(res.location, '/');
         std::string version = tokens[tokens.size() - 1];
 
-        Logger::get_instance()->log(LogLevel::INFO, "Downloading YTDLP version: " + version);
+        Logger::get_instance()->log(LogLevel::LINFO, "Downloading YTDLP version: " + version);
         return std::string(YTDLP_URL) + "download/" + version + "/yt-dlp_linux/"; 
 
     } else {
-        Logger::get_instance()->log(LogLevel::ERROR, "failed to obtain latest YTDLP url: " + res.location);
+        Logger::get_instance()->log(LogLevel::LERROR, "failed to obtain latest YTDLP url: " + res.location);
         return "";
     }
 }
@@ -46,9 +46,10 @@ bool download_ytdlp() {
         }
         if (download_file(ytdlp_url, ytdlp_path)) {
             std::string cmd = std::string("/bin/chmod +x ") + ytdlp_path;
-            return WIFEXITED(std::system(cmd.c_str()));
+            int retval = std::system(cmd.c_str());
+            return retval == 0;
         } else {
-            Logger::get_instance()->log(LogLevel::ERROR, "cannot download YTDLP");
+            Logger::get_instance()->log(LogLevel::LERROR, "cannot download YTDLP");
             return false;
         }
     }

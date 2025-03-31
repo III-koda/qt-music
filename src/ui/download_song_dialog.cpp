@@ -41,7 +41,7 @@ DownloaderThread::run() {
             : DownloadStatus::FAILED;
 
     std::string log_msg = "Download URL: " + m_url + (download_res ? " Success" : "Failed");
-    Logger::get_instance()->log(LogLevel::INFO, log_msg);
+    Logger::get_instance()->log(LogLevel::LINFO, log_msg);
 
     m_caller->download_finished_callback(m_url, status);
 }
@@ -106,7 +106,7 @@ DownloadSongDialog::dir_select_button_clicked() {
         }
         m_dir_label->setText((dir.toStdString()).c_str());
         m_download_dir = dir.toStdString();
-        Logger::get_instance()->log(LogLevel::INFO, "Download DIR select: " + m_download_dir);
+        Logger::get_instance()->log(LogLevel::LINFO, "Download DIR select: " + m_download_dir);
 }
 
 void 
@@ -134,7 +134,7 @@ DownloadSongDialog::download_song_button_clicked()
     DownloaderThread* downloader = new DownloaderThread(url, platform, m_download_dir, this);
     downloader->start();
 
-    Logger::get_instance()->log(LogLevel::INFO, "Download requested for URL: " + url);
+    Logger::get_instance()->log(LogLevel::LINFO, "Download requested for URL: " + url);
 }
 
 bool
